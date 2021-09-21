@@ -3,11 +3,6 @@
   <h2 align="center">Propuesta: Inmobiliaria</h2>
 </p>
 
-## Tabla de contenido
-* [Informacion general](#informacion-general)
-* [Tecnologias](#tecnologias)
-* [Autores](#autores)
-
 ## Informacion general
 Se realizara una pagina de inmobiliaria con el objetivo de proporcionar y ofrecer la mejor opcion sobre inmuebles a los prospectos.
 	
@@ -18,6 +13,7 @@ Se realizara una pagina de inmobiliaria con el objetivo de proporcionar y ofrece
 * Cloudinary
 * Heroku
 * GitHub
+* Etc
 
 ## Autores
 * [Luis Fernando Lopez Romo](https://github.com/Romo43)
