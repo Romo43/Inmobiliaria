@@ -17,6 +17,6 @@ Se realizara una pagina de inmobiliaria con el objetivo de proporcionar y ofrece
 
 ## Autores
 * [Luis Fernando Lopez Romo](https://github.com/Romo43)
-* Sandra Ascencio Chaparro
-* Felix Ivan Torres Ramirez
-* Juan Wilbert Barrera Keb
+* [Sandra Ascencio Chaparro](https://github.com/Sandra-618)
+* [Felix Ivan Torres Ramirez](https://github.com/FelitsTR)
+* [Juan Wilbert Barrera Keb](https://github.com/juanbake)
