@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
 
-const estateSchema = new Schema({
+const EstateSchema = new Schema({
     Estate:{
         clave: String,
         name: String,
@@ -46,4 +46,4 @@ const estateSchema = new Schema({
     }
 )
 
-export default model('estates', estateSchema)
+export default model('estates', EstateSchema)
