@@ -2,8 +2,11 @@ import { Router } from 'express'
 const router = Router();
 import * as estateCtrl from '../controllers/estate.controller'
 
-router.get('/home', estateCtrl.home)
-router.get('/estates', estateCtrl.allEstates)
-router.get('*', estateCtrl.error404)
+router.get('/', estateCtrl.allEstates)
+router.get('/:id', estateCtrl.findEstate)
+router.post('/', estateCtrl.createEstate)
+router.patch('/:id', estateCtrl.updateEstate)
+router.patch('/:id/:status', estateCtrl.statusEstate)
+router.delete('/:id', estateCtrl.deleteEstate)
 
 export default router
