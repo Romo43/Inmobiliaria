@@ -25,23 +25,54 @@ export const findEstate = async(req, res) =>{
 
 // Create estate
 export const createEstate = async(req, res) =>{
-    const { type_news, app, tag, version, title, description, day_begins, day_ends} = req.body
+    const { key, name, description, price, type, estate_status, media, id_media, areas, equipped, terrain, preserved, service_room, rooms, floors, parking, construction, old_estate, bathrooms, maintenance, Coordinates} = req.body
         try {
-            const result = await cloudinary.v2.uploader.upload(req.file.path)
-            const newNews = new News({
-                type_news,
-                app,
-                tag,
-                version,
-                title,
-                description,
-                img:{
-                    id_media: result.public_id,
-                    media: result.url
+            const result = await cloudinary.v2.uploader.upload(req.file.path , {public_id: '/AxioWeb'})
+            const newEstate = new Estate({
+                key: String,
+                name: String,
+                description: String,
+                price: Number,
+                type: {
+                    type: String,
+                    enum: ['HOUSE', 'DEPARTMENT']
                 },
-                publication_date:{
-                    day_begins,
-                    day_ends
+                estate_status:{
+                    type: String,
+                    enum: ['RENT', 'SALE']
+                },
+                status: {
+                    type: String,
+                    enum: ['SALE', 'SOLD']
+                },
+                Imgs:[{
+                    url: String,
+                    public_id: String
+                }],
+                Areas:[String],
+                Equipped:[String],
+                Details:{
+                    terrain: Number,
+                    preserved: String,
+                    service_room: Boolean,
+                    rooms: Number,
+                    floors: Number,
+                    parking: Number,
+                    construction: Number,
+                    old_estate: Number,
+                    bathrooms: Number,
+                    maintenance: Number
+                },
+                Location: {
+                    Type: {
+                        type: String, 
+                        enum: ['Point'],
+                        required: true
+                    },
+                    Coordinates: {
+                    type: [Number],
+                    required: true
+                    }
                 }
             })
             await News.create(newNews)
