@@ -3,28 +3,32 @@ import fs from 'fs-extra'
 import cloudinary from '../helper/imageUpload'
 
 // Get all estates
-export const allEstates = async (req, res) =>{
+export const allEstates = async (req, res) => {
     try {
-        const data = await Estate.find()
-        res.status(200).json(data)
+        const estates = await Estate.find()
+        if (!estates) {
+            res.status(404).json({ message: "There are not estates"})
+        }
+        res.status(200).json(estates)
     } catch (err) {
-        res.status(404).json({ message: err.message })
+        res.status(500).json({ message: err.message })
     }
 }
-
 // Get estate by id
-export const findEstate = async(req, res) =>{
+export const findEstate = async (req, res) => {
     const id = req.params.id
     try {
-        const data = await Estate.findById(id)
-        res.status(200).json(data)
+        const estate = await Estate.findById(id)
+        if (!estate) {
+            res.status(404).json({ message: "This estate does not exist"})
+        }
+        res.status(200).json(estate)
     } catch (err) {
-        res.status(404).json({ message: err.message })
+        res.status(500).json({ message: err.message })
     }
 }
-
 // Create estate
-export const createEstate = async(req, res) =>{
+export const createEstate = async (req, res) => {
     const { key, name, description, price, type, estate_status, media, id_media, areas, equipped, terrain, preserved, service_room, rooms, floors, parking, construction, old_estate, bathrooms, maintenance, Coordinates} = req.body
         try {
             const result = await cloudinary.v2.uploader.upload(req.file.path , {public_id: '/AxioWeb'})
@@ -78,13 +82,12 @@ export const createEstate = async(req, res) =>{
             await News.create(newNews)
             await fs.unlink(req.file.path)
             res.status(201).json(newNews)
-        } catch (error) {
+        } catch (err) {
             res.status(400).json({ message: err.message })
         }
 }
-
 // Update estate by id
-export const updateEstate = async(req, res) =>{
+export const updateEstate = async (req, res) => {
     const id = req.params.id
         const { type_news, app, tag, version, title, description, id_media, media, day_begins, day_ends} = req.body
         try {
@@ -115,21 +118,27 @@ export const updateEstate = async(req, res) =>{
             res.status(404).json({ message: err.message })
         }
 }
-
 // Update estate status 
-export const statusEstate = async(req, res) =>{
+export const statusEstate = async (req, res) => {
     const id = req.params.id
-    const status = req.params.status
+    const { status } = req.body
     try {
-        await Estate.findByIdAndUpdate(id, )
+        const estate = await Estate.findById(id)
+        if(!estate){
+            res.status(404).json({ message: "This estate does not exist" })
+        }
+        if (status === true) {
+            await Estate.updateOne(id, {status: false})
+        }else{
+            await Estate.updateOne(id, {status: true})
+        }
         res.status(201).json({ message: "Estate updated successfully" })
     } catch (err) {
-        res.status(404).json({ message: err.message })
+        res.status(500).json({ message: err.message })
     }
 }
-
 // Delete estate by id
-export const deleteEstate = async(req, res) =>{
+export const deleteEstate = async (req, res) => {
     const id = req.params.id;
         try{
             const data = await News.findById(id)
