@@ -1,23 +1,59 @@
 <p align="center">
   <h1 align="center">AxioWeb</h1>
-  <h2 align="center">Propuesta: Inmobiliaria</h2>
+  <h2 align="center">Real estate API</h2>
 </p>
 
-## Informacion general
-Se realizara una pagina de inmobiliaria con el objetivo de proporcionar y ofrecer la mejor opcion sobre inmuebles a los prospectos.
+## General Information
+Real estate API with the aim of providing modules for the creation and management of real estate in the state.
 	
-## Tecnologias
-* Node.js
-* Express
-* MongoDB Atlas / Compass
+## Technologies
+* ES6
+* MongoDB
+* GitHub
+
+## Services
+* MongoDB Atlas
 * Cloudinary
 * Heroku
-* GitHub
-* Etc
 
-## Autores
+## Dependencies
+* Cloudinary
+* Cors
+* Dotenv
+* Express
+* Fsextra
+* Jsonwebtoken
+* Mongoose
+* Morgan
+* Multer
+
+## DevDependencies
+* @babel/cli
+* @babel/core
+* @babel/node
+* @babel/preset-env
+* nodemon
+
+## SetUp
+### Environment Variables
+```
+Port
+  PORT = 
+
+MongoDB
+  MONGODB_URL = 
+
+Cloudinary
+  CLOUDINARY_CLOUD_NAME = 
+  CLOUDINARY_API_KEY = 
+  CLOUDINARY_API_SECRET = 
+```
+### Run API locally
+To run this project, you need babel-cli in your desktop, after that, install project locally using npm:
+```
+npm install
+npm run start
+```
+## Author
 * [Luis Fernando Lopez Romo](https://github.com/Romo43)
-* [Sandra Ascencio Chaparro](https://github.com/Sandra-618)
-* [Felix Ivan Torres Ramirez](https://github.com/FelitsTR)
-* [Juan Wilbert Barrera Keb](https://github.com/juanbake)
 
