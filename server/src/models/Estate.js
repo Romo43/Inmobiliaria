@@ -4,8 +4,8 @@ const EstateSchema = new Schema({
     key: String,
     name: String,
     description: String,
-    price: Number,
-    type: {
+    price: String,
+    estate_type: {
         type: String,
         enum: ['HOUSE', 'DEPARTMENT']
     },
@@ -15,33 +15,34 @@ const EstateSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['SALE', 'SOLD']
+        enum: ['SALE', 'SOLD'],
+        default: 'SALE' 
     },
-    Imgs:[{
-        url: String,
-        public_id: String
-    }],
-    Areas:[String],
-    Equipped:[String],
-    Details:{
-        terrain: Number,
+    imgs:{
+        id_media: String,
+        media: String
+    },
+    areas:[String],
+    equipped:[String],
+    details:{
+        terrain: String,
         preserved: String,
         service_room: Boolean,
         rooms: Number,
         floors: Number,
         parking: Number,
-        construction: Number,
-        old_estate: Number,
-        bathrooms: Number,
-        maintenance: Number
+        construction: String,
+        old_estate: String,
+        bathrooms: String,
+        maintenance: String
     },
-    Location: {
-        Type: {
+    location: {
+        type: {
             type: String, 
             enum: ['Point'],
             required: true
         },
-        Coordinates: {
+        coordinates: {
         type: [Number],
         required: true
         }

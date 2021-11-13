@@ -5,7 +5,7 @@ import cloudinary from '../helper/imageUpload'
 // Get all estates
 export const allEstates = async (req, res) => {
     try {
-        const estates = await Estate.find()
+        const estates = await Estate.find().sort()
         if (!estates) {
             res.status(404).json({ message: "There are not estates"})
         }
@@ -19,104 +19,103 @@ export const findEstate = async (req, res) => {
     const id = req.params.id
     try {
         const estate = await Estate.findById(id)
-        if (!estate) {
-            res.status(404).json({ message: "This estate does not exist"})
-        }
+        // if (!estate) {
+        //     res.status(404).json({ message: "This estate does not exist"})
+        //     next();
+        // }
         res.status(200).json(estate)
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(404).json({ message: err.message })
     }
 }
 // Create estate
 export const createEstate = async (req, res) => {
-    const { key, name, description, price, type, estate_status, media, id_media, areas, equipped, terrain, preserved, service_room, rooms, floors, parking, construction, old_estate, bathrooms, maintenance, Coordinates} = req.body
-        try {
-            const result = await cloudinary.v2.uploader.upload(req.file.path , {public_id: '/AxioWeb'})
-            const newEstate = new Estate({
-                key: String,
-                name: String,
-                description: String,
-                price: Number,
-                type: {
-                    type: String,
-                    enum: ['HOUSE', 'DEPARTMENT']
-                },
-                estate_status:{
-                    type: String,
-                    enum: ['RENT', 'SALE']
-                },
-                status: {
-                    type: String,
-                    enum: ['SALE', 'SOLD']
-                },
-                Imgs:[{
-                    url: String,
-                    public_id: String
-                }],
-                Areas:[String],
-                Equipped:[String],
-                Details:{
-                    terrain: Number,
-                    preserved: String,
-                    service_room: Boolean,
-                    rooms: Number,
-                    floors: Number,
-                    parking: Number,
-                    construction: Number,
-                    old_estate: Number,
-                    bathrooms: Number,
-                    maintenance: Number
-                },
-                Location: {
-                    Type: {
-                        type: String, 
-                        enum: ['Point'],
-                        required: true
-                    },
-                    Coordinates: {
-                    type: [Number],
-                    required: true
-                    }
-                }
-            })
-            await News.create(newNews)
-            await fs.unlink(req.file.path)
-            res.status(201).json(newNews)
-        } catch (err) {
-            res.status(400).json({ message: err.message })
-        }
+    const { key, name, description, price, estate_type, estate_status, areas, equipped, terrain, preserved, service_room, rooms, floors, parking, construction, old_estate, bathrooms, maintenance, coordinates, type} = req.body
+    try {
+        const result = await cloudinary.v2.uploader.upload(req.file.path , {folder: 'AxioWeb'})
+        const newEstate = new Estate({
+            key,
+            name,
+            description,
+            price,
+            estate_type,
+            estate_status,
+            imgs:{
+                id_media: result.public_id,
+                media: result.url
+            },
+            areas,
+            equipped,
+            details:{
+                terrain,
+                preserved,
+                service_room,
+                rooms,
+                floors,
+                parking,
+                construction,
+                old_estate,
+                bathrooms,
+                maintenance
+            },
+            location: {
+                type: type,
+                coordinates
+            }
+        })
+        await Estate.create(newEstate)
+        await fs.unlink(req.file.path)
+        res.status(201).json(newEstate)
+    } catch (err) {
+        await fs.unlink(req.file.path)
+        res.status(400).json({ message: err.message })
+    }
 }
 // Update estate by id
 export const updateEstate = async (req, res) => {
     const id = req.params.id
-        const { type_news, app, tag, version, title, description, id_media, media, day_begins, day_ends} = req.body
-        try {
-            const news = await News.findById(id)
-            await cloudinary.v2.uploader.destroy(news.img.id_media)
-            const result = await cloudinary.v2.uploader.upload(req.file.path)
-            const newNews = new News({
-                _id: id,
-                type_news: type_news,
-                app: app,
-                tag: tag,
-                version: version,
-                title: title,
-                description: description,
-                img:{
-                    id_media: result.public_id,
-                    media: result.url
-                },
-                publication_date:{
-                    day_begins: day_begins,
-                    day_end: day_ends
-                }
-            })
-            await News.findByIdAndUpdate(id, newNews)
-            await fs.unlink(req.file.path)
-            res.status(200).json({ message: 'News updated successfully'})
-        } catch (err) {
-            res.status(404).json({ message: err.message })
-        }
+    const { key, name, description, price, estate_type, estate_status, areas, equipped, terrain, preserved, service_room, rooms, floors, parking, construction, old_estate, bathrooms, maintenance, coordinates, type} = req.body
+    try {
+        const estate = await Estate.findById(id)
+        await cloudinary.v2.uploader.destroy(estate.imgs.id_media)
+        const result = await cloudinary.v2.uploader.upload(req.file.path, {folder: "AxioWeb"})
+        const newEstate = new Estate({
+            _id: id,
+            key: key,
+            name: name,
+            description: description,
+            price: price,
+            estate_type: estate_type,
+            estate_status: estate_status,
+            imgs:{
+                id_media: result.public_id,
+                media: result.url
+            },
+            areas: areas,
+            equipped: equipped,
+            details:{
+                terrain: terrain,
+                preserved: preserved,
+                service_room: service_room,
+                rooms: rooms,
+                floors: floors,
+                parking: parking,
+                construction: construction,
+                old_estate: old_estate,
+                bathrooms: bathrooms,
+                maintenance: maintenance
+            },
+            location: {
+                type: type,
+                coordinates: coordinates
+            }
+        })
+        await Estate.findByIdAndUpdate(id, newEstate)
+        await fs.unlink(req.file.path)
+        res.status(200).json({ message: 'Estate updated successfully'})
+    } catch (err) {
+        res.status(404).json({ message: err.message })
+    }
 }
 // Update estate status 
 export const statusEstate = async (req, res) => {
@@ -141,10 +140,10 @@ export const statusEstate = async (req, res) => {
 export const deleteEstate = async (req, res) => {
     const id = req.params.id;
         try{
-            const data = await News.findById(id)
-            await cloudinary.v2.uploader.destroy(data.img.id_media)
+            const data = await Estate.findById(id)
+            await cloudinary.v2.uploader.destroy(data.imgs.id_media)
             await data.remove()
-            res.status(200).json({ message: "News deleted successfully"})
+            res.status(200).json({ message: "Estate deleted successfully"})
         } catch (err) {
             res.status(404).json({ message: err.message })
         }
