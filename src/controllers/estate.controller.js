@@ -151,6 +151,7 @@ module.exports = class API {
             res.status(200).json({ message: "Estate deleted successfully"});
         } catch (err) {
             res.status(404).json({ message: err.message });
+            
         }
     }
 }
