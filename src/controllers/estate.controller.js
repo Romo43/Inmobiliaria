@@ -63,7 +63,7 @@ module.exports = class API {
                 })
                 await Estate.create(newEstate);
                 await fs.unlink(req.file.path);
-                res.status(201).json(newEstate);
+                res.status(201).json({message: "Estate created successfully"});
             }
 
         } catch (err) {
@@ -125,18 +125,17 @@ module.exports = class API {
 // Update estate status 
     static async statusEstate(req, res){
         const id = req.params.id;
-        const { status } = req.body;
         try {
             const estate = await Estate.findById(id);
             if(!estate){
                 res.status(404).json({ message: "This estate does not exist" });
             }
-            if (status === true) {
-                await Estate.updateOne(id, {status: false});
+            if (estate.status === "SALE") {
+                await Estate.updateOne({id}, {status: "SOLD"});
             }else{
-                await Estate.updateOne(id, {status: true});
+                await Estate.updateOne({id}, {status: "SALE"});
             }
-            res.status(201).json({ message: "Estate updated successfully" });
+            res.status(200).json({ message: "Estate updated successfully" });
         } catch (err) {
             res.status(500).json({ message: err.message });
         }

@@ -12,7 +12,7 @@ router.post('/', API.createEstate);
 // Update all estate by Id
 router.patch('/:id', API.updateEstate);
 // Update estate status by Id and status
-router.put('/:id/:status', API.statusEstate);
+router.put('/:id', API.statusEstate);
 // Delete este by Id
 router.delete('/:id', API.deleteEstate)
 
