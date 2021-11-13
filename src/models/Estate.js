@@ -1,6 +1,5 @@
-import { Schema, model } from 'mongoose'
-
-const EstateSchema = new Schema({
+const mongoose = require("mongoose");
+const EstateSchema = mongoose.Schema({
     key: String,
     name: String,
     description: String,
@@ -57,4 +56,4 @@ const EstateSchema = new Schema({
     }
 )
 
-export default model('estates', EstateSchema)
+module.exports = mongoose.model('estates', EstateSchema)
