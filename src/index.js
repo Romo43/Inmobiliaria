@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const estateRoutes = require('./routes/estate.routes.js');
 //const employeeRoutes = require('./routes/employee.routes');
 const multer = require('multer');
+const path = require("path");
 require('dotenv').config();
 
 // Initializations
@@ -21,7 +22,7 @@ app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(express.static("uploads"));
+app.use(express.static(path.join(__dirname, "uploads")));
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
