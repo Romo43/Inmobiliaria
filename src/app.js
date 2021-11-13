@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const estateRoutes = require('./routes/estate.routes');
+const estateRoutes = require('./routes/estate.routes.js');
 //const employeeRoutes = require('./routes/employee.routes');
 const multer = require('multer');
 

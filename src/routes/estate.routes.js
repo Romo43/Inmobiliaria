@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 // Get all estate controllers
-const API = require('../controllers/estate.controller');
+const API = require('../controllers/estate.controller.js');
 
 // Get all estates
 router.get('/', API.allEstates);
