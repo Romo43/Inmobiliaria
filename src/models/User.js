@@ -1,43 +1,37 @@
-// import { Schema, model } from 'mongoose'
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
-// const UserSchema = Schema({
-//     name: {
-//         type: String,
-//         required: [true, 'The name is required']
-//     },
-//     email: {
-//         type: String,
-//         required: [true, 'The email is required'],
-//         unique: true
-//     },
-//     password: {
-//         type: String,
-//         required: [true, 'The password is required'],
-//     },
-//     img: {
-//         type: String,
-//     },
-//     rol: {
-//         type: String,
-//         required: true,
-//         emun: ['ADMIN_ROLE', 'USER_ROLE']
-//     },
-//     status: {
-//         type: Boolean,
-//         default: true
-//     },
-//     google: {
-//         type: Boolean,
-//         default: false
-//     },
-// })
+const productSchema = mongoose.Schema({
+    username: {
+        type: String,
+        unique: true,
+    },
+    email: {
+        type: String,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    roles: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Role"
+    }]
+},
+{
+    timestamps: true,
+    versionKey: false,
+}
+);
 
+productSchema.statics.encryptPassword = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+};
 
+productSchema.statics.comparePassword = async (password, receivedPassword) => {
+    return await bcrypt.compare(password, receivedPassword)
+}
 
-// UserSchema.methods.toJSON = function() {
-//     const { __v, password, _id, ...user  } = this.toObject()
-//     user.uid = _id
-//     return user
-// }
-
-// export default model('users', UserSchema)
+module.exports = mongoose.model("User", productSchema);

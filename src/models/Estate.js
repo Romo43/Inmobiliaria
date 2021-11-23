@@ -46,10 +46,6 @@ const EstateSchema = mongoose.Schema({
         required: true
         }
     }
-    // ,
-    // Contact:{
-    //     employee_id: Schema.Types.ObjectId
-    // }
     
     },{
         timestamps: true

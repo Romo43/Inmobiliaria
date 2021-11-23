@@ -2,15 +2,14 @@ const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const estateRoutes = require('./routes/estate.routes.js');
-//const employeeRoutes = require('./routes/employee.routes');
+const estateRoutes = require('./routes/estate.routes');
+const userRoutes = require('./routes/user.routes');
 const multer = require('multer');
 const path = require("path");
 require('dotenv').config();
 
 // Initializations
 const app = express();
-
 // Settings
 app.set('port', process.env.PORT);
 
@@ -31,18 +30,18 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb){
         cb(null, file.fieldname + '-' + file.originalname);
     }
-})
-
+});
 app.use(multer({storage: storage}).single('media'));
 
 // Routes
 app.use("/AxioWeb/estate", estateRoutes);
-//app.use("/AxioWeb/employee", employeeRoutes);
+app.use("/AxioWeb/user", userRoutes);
 
+// Port
 app.listen(app.get("port"));
-
 console.log("Server on port", app.get('port'));
 
+// Database
 mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
