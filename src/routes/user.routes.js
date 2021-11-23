@@ -13,6 +13,7 @@ router.use((req, res, next) => {
 });
 
 router.post("/signin", userCtrl.signin);
+router.post("/signup", userCtrl.signup);
 router.post("/create", [authCtrl.verifyToken, authCtrl.isAdmin], userCtrl.createUser);
 
 module.exports = router;

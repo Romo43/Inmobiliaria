@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const EstateSchema = mongoose.Schema({
     key: String,
     name: String,
@@ -46,7 +47,6 @@ const EstateSchema = mongoose.Schema({
         required: true
         }
     }
-    
     },{
         timestamps: true
     }

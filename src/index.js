@@ -16,7 +16,7 @@ app.set('port', process.env.PORT);
 // Middleware
 const corsOptions = {
     origin: '*'
-}
+} 
 app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(express.json());

@@ -2,7 +2,6 @@ const Estate = require('../models/Estate.js');
 const fs = require('fs-extra');
 const cloudinary = require('../helper/imageUpload.js');
 module.exports = class estateCtrl {
-
 // Get all estates
     static async allEstates(req, res){
         try {

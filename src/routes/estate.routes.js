@@ -9,11 +9,11 @@ router.get('/', estateCtrl.allEstates);
 // Get estate by Id
 router.get('/:id', estateCtrl.findEstate);
 // Create new estate
-router.post('/', [authCtrl.verifyToken, authCtrl.isAdmin], estateCtrl.createEstate);
+router.post('/', [authCtrl.verifyToken, authCtrl.isEmployee], estateCtrl.createEstate);
 // Update all estate by Id
-router.patch('/:id', [authCtrl.verifyToken, authCtrl.isAdmin], estateCtrl.updateEstate);
+router.patch('/:id', [authCtrl.verifyToken, authCtrl.isEmployee], estateCtrl.updateEstate);
 // Update estate status by Id and status
-router.put('/:id', estateCtrl.statusEstate);
+router.put('/:id', [authCtrl.verifyToken, authCtrl.isEmployee], estateCtrl.statusEstate);
 // Delete este by Id
 router.delete('/:id', [authCtrl.verifyToken, authCtrl.isAdmin], estateCtrl.deleteEstate)
 

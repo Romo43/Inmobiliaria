@@ -4,6 +4,7 @@ const Role = require("../models/Role")
 require('dotenv').config();
 
 module.exports = class authCtrl {
+
   static async verifyToken (req, res, next){
     let token = req.headers["x-access-token"];
 
@@ -35,6 +36,25 @@ module.exports = class authCtrl {
       }
 
       return res.status(403).json({ message: "Require Admin Role!" });
+    } catch (error) {
+      console.log(error)
+      return res.status(500).send({ message: error });
+    }
+  };
+
+  static async isEmployee(req, res, next) {
+    try {
+      const user = await User.findById(req.userId);
+      const roles = await Role.find({ _id: { $in: user.roles } });
+  
+      for (let i = 0; i < roles.length; i++) {
+        if (roles[i].name === "employee") {
+          next();
+          return;
+        }
+      }
+  
+      return res.status(403).json({ message: "Require Employee Role!" });
     } catch (error) {
       console.log(error)
       return res.status(500).send({ message: error });
