@@ -26,47 +26,46 @@ module.exports = class estateCtrl {
     }
 // Create estate
     static async createEstate(req, res){
-        const { key, name, description, price, estate_type, estate_status, areas, equipped, terrain, preserved, service_room, rooms, floors, parking, construction, old_estate, bathrooms, maintenance, coordinates, type} = req.body;
+        const { key, name, description, price, estate_type, estate_status, areas, equipped, terrain, preserved, service_room, rooms, floors, parking, construction, old_estate, bathrooms, maintenance, coordinates} = req.body;
         try {
-            const result = await cloudinary.v2.uploader.upload(req.file.path , {folder: 'AxioWeb'});
-            if(result){
-                const newEstate = new Estate({
-                    key,
-                    name,
-                    description,
-                    price,
-                    estate_type,
-                    estate_status,
-                    imgs:{
-                        id_media: result.public_id,
-                        media: result.url
-                    },
-                    areas,
-                    equipped,
-                    details:{
-                        terrain,
-                        preserved,
-                        service_room,
-                        rooms,
-                        floors,
-                        parking,
-                        construction,
-                        old_estate,
-                        bathrooms,
-                        maintenance
-                    },
-                    location: {
-                        type: type,
-                        coordinates
-                    }
-                })
-                await Estate.create(newEstate);
-                await fs.unlink(req.file.path);
-                res.status(201).json({message: "Estate created successfully"});
+            const uploader = async (path) => await cloudinary.uploads(path , 'AxioWeb');
+            const urls = [];
+            const files = req.files;
+            for(const file of files){
+                const {path} = file;
+                const newPath = await uploader(path);
+                urls.push(newPath)
+                fs.unlinkSync(path);
             }
-
+            const newEstate = new Estate({
+                key,
+                name,
+                description,
+                price,
+                estate_type,
+                estate_status,
+                imgs: urls,
+                areas,
+                equipped,
+                details:{
+                    terrain,
+                    preserved,
+                    service_room,
+                    rooms,
+                    floors,
+                    parking,
+                    construction,
+                    old_estate,
+                    bathrooms,
+                    maintenance
+                },
+                location: {
+                    coordinates
+                }
+            })
+            await Estate.create(newEstate);
+            res.status(201).json({message: "Estate created successfully"});
         } catch (err) {
-            await fs.unlink(req.file.path);
             res.status(400).json({ message: err.message });
         }
     }
@@ -76,9 +75,22 @@ module.exports = class estateCtrl {
         const { key, name, description, price, estate_type, estate_status, areas, equipped, terrain, preserved, service_room, rooms, floors, parking, construction, old_estate, bathrooms, maintenance, coordinates, type} = req.body;
         try {
             const data = await Estate.findById(id);
-            await cloudinary.v2.uploader.destroy(data.imgs.id_media);
-            const result = await cloudinary.v2.uploader.upload(req.file.path, {folder: "AxioWeb"});
-            if (result) {
+            // Destroy imgs
+            const images = data.imgs;
+            for(const image of images){
+                const id_media = image.id_media;
+                cloudinary.destroys(id_media);
+            }
+            // Upload imgs
+            const uploader = async (path) => await cloudinary.uploads(path , 'AxioWeb');
+            const urls = [];
+            const files = req.files;
+            for(const file of files){
+                const {path} = file;
+                const newPath = await uploader(path);
+                urls.push(newPath)
+                fs.unlinkSync(path);
+            }
                 const newEstate = new Estate({
                     _id: id,
                     key: key,
@@ -87,10 +99,7 @@ module.exports = class estateCtrl {
                     price: price,
                     estate_type: estate_type,
                     estate_status: estate_status,
-                    imgs:{
-                        id_media: result.public_id,
-                        media: result.url
-                    },
+                    imgs: urls,
                     areas: areas,
                     equipped: equipped,
                     details:{
@@ -111,13 +120,8 @@ module.exports = class estateCtrl {
                     }
                 })
                 await Estate.findByIdAndUpdate(id, newEstate);
-            await fs.unlink(req.file.path);
             res.status(200).json({ message: 'Estate updated successfully'});
-            }
-            
-            
         } catch (err) {
-            await fs.unlink(req.file.path);
             res.status(404).json({ message: err.message });
         }
     }
@@ -144,7 +148,11 @@ module.exports = class estateCtrl {
         const id = req.params.id;
         try{
             const data = await Estate.findById(id);
-            await cloudinary.v2.uploader.destroy(data.imgs.id_media);
+            const images = data.imgs;
+            for(const image of images){
+                const id_media = image.id_media;
+                cloudinary.destroys(id_media);
+            }
             await data.remove();
             res.status(200).json({ message: "Estate deleted successfully"});
         } catch (err) {

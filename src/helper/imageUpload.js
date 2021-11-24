@@ -8,4 +8,19 @@ cloudinary.v2.config({
     secure: true
 });
 
-module.exports = cloudinary;
+exports.uploads = (file, folder) => {
+    return new Promise(resolve => {
+        cloudinary.uploader.upload(file, (result) => {
+            resolve({
+                id_media: result.public_id,
+                media: result.url
+            })
+        },{
+            resource_type: "auto",
+            folder: folder
+        })
+    })
+};
+exports.destroys = (id_media) => {
+    cloudinary.uploader.destroy(id_media)
+}

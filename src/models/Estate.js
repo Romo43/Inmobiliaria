@@ -18,10 +18,11 @@ const EstateSchema = mongoose.Schema({
         enum: ['SALE', 'SOLD'],
         default: 'SALE' 
     },
-    imgs:{
+    imgs:[{
+        _id : false,
         id_media: String,
         media: String
-    },
+    }],
     areas:[String],
     equipped:[String],
     details:{
@@ -39,17 +40,14 @@ const EstateSchema = mongoose.Schema({
     location: {
         type: {
             type: String, 
-            enum: ['Point'],
-            required: true
+            default: "Point"
         },
         coordinates: {
         type: [Number],
         required: true
         }
     }
-    },{
-        timestamps: true
-    }
-)
+    },{timestamps: true}
+);
 
 module.exports = mongoose.model('estates', EstateSchema)

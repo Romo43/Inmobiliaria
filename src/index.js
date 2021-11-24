@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + file.originalname);
     }
 });
-app.use(multer({storage: storage}).single('media'));
+app.use(multer({storage: storage}).array('media'));
 
 // Routes
 app.use("/AxioWeb/estate", estateRoutes);
