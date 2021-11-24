@@ -13,7 +13,7 @@ router.post('/', [authCtrl.verifyToken, authCtrl.isEmployee], estateCtrl.createE
 // Update all estate by Id
 router.patch('/:id', [authCtrl.verifyToken, authCtrl.isEmployee], estateCtrl.updateEstate);
 // Update estate status by Id and status
-router.put('/:id', [authCtrl.verifyToken, authCtrl.isEmployee], estateCtrl.statusEstate);
+router.put('/:id', [authCtrl.verifyToken, authCtrl.isUser], estateCtrl.buyEstate);
 // Delete este by Id
 router.delete('/:id', [authCtrl.verifyToken, authCtrl.isAdmin], estateCtrl.deleteEstate)
 

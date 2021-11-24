@@ -126,7 +126,7 @@ module.exports = class estateCtrl {
         }
     }
 // Update estate status 
-    static async statusEstate(req, res){
+    static async buyEstate(req, res){
         const id = req.params.id;
         try {
             const estate = await Estate.findById(id);
@@ -135,10 +135,10 @@ module.exports = class estateCtrl {
             }
             if (estate.status === "SALE") {
                 await Estate.updateOne({id}, {status: "SOLD"});
+                res.status(200).json({ message: "Thanks for your purchase!" });
             }else{
-                await Estate.updateOne({id}, {status: "SALE"});
+                res.json({ message: "This estate has already been sold"})
             }
-            res.status(200).json({ message: "Estate updated successfully" });
         } catch (err) {
             res.status(500).json({ message: err.message });
         }
