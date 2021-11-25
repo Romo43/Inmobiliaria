@@ -18,6 +18,6 @@ router.post("/login", userCtrl.login);
 // Register
 router.post("/register", [authCtrl.checkDuplicateEmail], userCtrl.register);
 // Create admin, employee or user
-router.post("/create", [authCtrl.verifyToken, authCtrl.onlyAdmin, authCtrl.checkDuplicateEmail], userCtrl.createUser);
+router.post("/create", [authCtrl.verifyToken, authCtrl.authorizedPersonalOnly, authCtrl.checkDuplicateEmail], userCtrl.createUser);
 
 module.exports = router;

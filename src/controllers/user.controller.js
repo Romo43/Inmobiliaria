@@ -59,22 +59,29 @@ module.exports = class userCtrl {
 // Create admin, employee or user
   static async createUser (req, res) {
     try {
-      const { username, email, password, roles } = req.body;
-      const rolesFound = await Role.find({ name: { $in: roles } });
-      const user = new User({
-        username,
-        email,
-        password,
-        roles: rolesFound.map((role) => role._id),
-      });
-      user.password = await User.encryptPassword(user.password);
-      const savedUser = await user.save();
-      return res.status(200).json({
-        _id: savedUser._id,
-        username: savedUser.username,
-        email: savedUser.email,
-        roles: savedUser.roles,
-      });
+      const user = await User.findById(req.userId);
+      const roles = await Role.find({ _id: { $in: user.roles } });
+      for (let i = 0; i < roles.length; i++) {
+        if (roles[i].name === "admin") {
+          const { username, email, password, roles } = req.body;
+          const rolesFound = await Role.find({ name: { $in: roles } });
+          const user = new User({
+            username,
+            email,
+            password,
+            roles: rolesFound.map((role) => role._id),
+          });
+          user.password = await User.encryptPassword(user.password);
+          const savedUser = await user.save();
+          return res.status(200).json({
+            _id: savedUser._id,
+            username: savedUser.username,
+            email: savedUser.email,
+            roles: savedUser.roles,
+          });
+        }
+      }
+      res.status(403).json({ message: "Require Admin Role!" });
     } catch (err) {
       console.error(err);
     }

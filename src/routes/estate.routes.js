@@ -17,6 +17,6 @@ router.patch('/:id', [authCtrl.verifyToken, authCtrl.authorizedPersonalOnly], es
 // Update estate status by Id and status
 router.put('/:id', [authCtrl.verifyToken, authCtrl.authorizedPersonalOnly], estateCtrl.updateEstateStatus);
 // Delete este by Id
-router.delete('/:id', [authCtrl.verifyToken, authCtrl.onlyAdmin], estateCtrl.deleteEstate);
+router.delete('/:id', [authCtrl.verifyToken, authCtrl.authorizedPersonalOnly], estateCtrl.deleteEstate);
 
 module.exports = router;

@@ -165,16 +165,23 @@ module.exports = class estateCtrl {
     static async deleteEstate(req, res){
         const id = req.params.id;
         try{
-            const data = await Estate.findById(id);
-            const images = data.imgs;
-            for(const image of images){
-                const id_media = image.id_media;
-                cloudinary.destroys(id_media);
+            const user = await User.findById(req.userId);
+            const roles = await Role.find({ _id: { $in: user.roles } });
+            for (let i = 0; i < roles.length; i++) {
+                if (roles[i].name === "admin") {
+                    const data = await Estate.findById(id);
+                    const images = data.imgs;
+                    for(const image of images){
+                        const id_media = image.id_media;
+                        cloudinary.destroys(id_media);
+                    }
+                    await data.remove();
+                    res.status(200).json({ message: "Estate deleted successfully"});
+                }
             }
-            await data.remove();
-            res.status(200).json({ message: "Estate deleted successfully"});
+            res.status(403).json({ message: "Require Admin Role!" });
         } catch (err) {
-            res.status(404).json({ message: err.message });
+            res.status(500).json({ message: err.message });
             
         }
     }
