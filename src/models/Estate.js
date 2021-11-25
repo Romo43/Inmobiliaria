@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const EstateSchema = mongoose.Schema({
-    key: String,
     name: String,
     description: String,
     price: String,
@@ -46,8 +45,11 @@ const EstateSchema = mongoose.Schema({
         type: [Number],
         required: true
         }
+    },
+    contact:{
+        username: String,
+        email: String
     }
-    },{timestamps: true}
-);
+},{timestamps: true});
 
 module.exports = mongoose.model('estates', EstateSchema)
