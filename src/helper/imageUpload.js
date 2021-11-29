@@ -15,7 +15,7 @@ exports.uploads = (file, folder) => {
         cloudinary.uploader.upload(file, (result) => {
             resolve({
                 id_media: result.public_id,
-                media: result.url
+                media: result.secure_url
             })
         },{
             resource_type: "auto",
