@@ -1,54 +1,36 @@
-const jwt = require("jsonwebtoken")
-const User = require("../models/User")
-const Role = require("../models/Role")
-require('dotenv').config();
+import jwt from "jsonwebtoken";
+import User from "../models/user.js";
+import Role from "../models/role.js";
+import { SECRET } from "../config/config.js";
 
-module.exports = class authCtrl {
 // Verify token
-  static async verifyToken (req, res, next){
-    let token = req.headers["x-access-token"];
+const verifyToken = async (req, res, next) => {
+  try {
+    const token = req.headers["x-access-token"];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+    const decoded = jwt.verify(token, SECRET);    
+    req.userId = decoded.id;
+    req.userEmail = decoded.email;
+    req.userUsername = decoded.username;
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+};
 
-    if (!token) return res.status(403).json({ message: "No token provided" });
+// Only admin
+const onlyAdmin = async (req, res, next) => {
+  const id = req.userId;
+  try {
+    const user = await User.findById(id);
+    const role = await Role.findById(user.role);
+    if (role.name !== "admin")
+      return res.status(401).json({ message: "Unauthorized" });
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+};
 
-    try {
-      const decoded = jwt.verify(token, process.env.SECRET);
-      req.userId = decoded.id;
-      const user = await User.findById(req.userId, { password: 0 });
-      if (!user) return res.status(404).json({ message: "No user found" });
-
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: "Unauthorized!" });
-    }
-  };
-// Verify authorized personal
-  static async authorizedPersonalOnly (req, res, next){
-    try {
-      const user = await User.findById(req.userId);
-      const roles = await Role.find({ _id: { $in: user.roles } });
-
-      for (let i = 0; i < roles.length; i++) {
-        if (roles[i].name === "admin" || roles[i].name === "employee") {
-          next();
-          return;
-        }
-      }
-      return res.status(403).json({ message: "Authorized personal only" });
-    } catch (error) {
-      console.log(error)
-      return res.status(500).send({ message: error });
-    }
-  };
-// Verify that emails are not duplicated
-  static async checkDuplicateEmail (req, res, next) {
-    try {
-      const email = await User.findOne({ email: req.body.email });
-      if (email)
-        return res.status(400).json({ message: "The email already exists" });
-      next();
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  };
-  
-}
+// Export middlewares
+export { verifyToken, onlyAdmin };

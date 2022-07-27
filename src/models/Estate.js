@@ -1,55 +1,97 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+const { Schema, model } = mongoose;
 
-const EstateSchema = mongoose.Schema({
-    name: String,
-    description: String,
-    price: String,
-    estate_type: {
-        type: String,
-        enum: ['HOUSE', 'DEPARTMENT']
+const estateSchema = Schema(
+  {
+    name: {
+      type: String,
+      required: true,
     },
-    estate_status:{
-        type: String,
-        enum: ['RENT', 'SALE']
+    description: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    estate_type: {
+      type: String,
+      enum: ["house", "department"],
+      required: true,
+    },
+    estate_status: {
+      type: String,
+      enum: ["rent", "sale"],
+      required: true,
     },
     status: {
-        type: String,
-        enum: ['SALE', 'SOLD'],
-        default: 'SALE' 
+      type: String,
+      enum: ["sale", "sold"],
+      default: "sale",
     },
-    imgs:[{
-        _id : false,
+    imgs: [
+      {
         id_media: String,
-        media: String
-    }],
-    areas:[String],
-    equipped:[String],
-    details:{
-        terrain: String,
-        preserved: String,
-        service_room: Boolean,
-        rooms: Number,
-        floors: Number,
-        parking: Number,
-        construction: String,
-        old_estate: String,
-        bathrooms: String,
-        maintenance: String
+        media: String,
+      },
+    ],
+    areas: [String],
+    equipped: [String],
+    details: {
+      terrain: {
+        type: String,
+      },
+      preserved: {
+        type: String,
+      },
+      service_room: {
+        type: Boolean,
+      },
+      rooms: {
+        type: Number,
+      },
+      floors: {
+        type: Number,
+      },
+      parking: {
+        type: Number,
+      },
+      construction: {
+        type: String,
+      },
+      old_estate: {
+        type: String,
+      },
+      bathrooms: {
+        type: Number,
+      },
+      maintenance: {
+        type: Number,
+      },
     },
     location: {
-        type: {
-            type: String, 
-            default: "Point"
-        },
-        coordinates: {
+      type: {
+        type: String,
+        default: "point",
+      },
+      coordinates: {
         type: [Number],
-        required: true
-        }
+        required: true,
+      },
     },
-    contact:{
-        username: String,
-        email: String
-    }
-},{timestamps: true});
+    contact: {
+      username: String,
+      email: String,
+    },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('estates', EstateSchema)
+estateSchema.methods.toJSON = function () {
+  const { __v, _id, ...estate } = this.toObject();
+  estate.uid = _id;
+  return estate;
+};
+
+export default model("Estate", estateSchema);

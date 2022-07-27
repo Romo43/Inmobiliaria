@@ -1,5 +1,12 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+const { Schema, model } = mongoose;
 
-const RoleSchema = mongoose.Schema({name: String}, {versionKey: false});
+const roleSchema = new Schema({ name: String });
 
-module.exports = mongoose.model( 'Role', RoleSchema )
+roleSchema.methods.toJSON = function () {
+  const { __v, _id, ...role } = this.toObject();
+  role.uid = _id;
+  return role;
+};
+
+export default model("Role", roleSchema);
