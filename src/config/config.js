@@ -3,7 +3,7 @@ import { config } from "dotenv";
 config();
 
 const {
-  PORT,
+  PORT = 3000,
   SECRET,
   MONGO_URL,
   CLOUDINARY_NAME,

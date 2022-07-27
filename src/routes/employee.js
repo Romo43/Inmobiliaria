@@ -2,6 +2,7 @@ import { Router } from "express";
 import { check } from "express-validator";
 import { changePassword } from "../controllers/employee.js";
 import { verifyToken } from "../middlewares/authJWT.js";
+import { validateFields } from "../middlewares/validateFields.js";
 import { checkUserExists } from "../middlewares/dbValidators.js";
 
 // Create a new router
@@ -14,7 +15,7 @@ router.use(checkUserExists);
 // Change password
 router.put(
   "/change-password",
-  [check("password").withMessage("New password is required")],
+  [check("password", "New password is required").trim(), validateFields],
   changePassword
 );
 
