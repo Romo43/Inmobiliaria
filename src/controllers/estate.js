@@ -2,6 +2,9 @@ import Estate from "../models/Estate.js";
 import fs from "fs-extra";
 import { destroy, upload } from "../helper/imageUpload.js";
 
+// Estate search
+
+
 // Get all user estates
 const allEstates = async (req, res) => {
   try {

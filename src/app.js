@@ -10,13 +10,14 @@ import adminRoute from "./routes/admin.js";
 import employeeRoute from "./routes/employee.js";
 import authRoute from "./routes/auth.js";
 import estateRoute from "./routes/estate.js";
+// import tokenRoute from "./routes/token.js";
 //import "./helper/createAdmin.js";
 
 // Initializations
 const app = express();
 
+// Settings
 const __filename = fileURLToPath(import.meta.url);
-
 const __dirname = path.dirname(__filename);
 
 // Middlewares
@@ -43,6 +44,7 @@ app.use("/api/admin", adminRoute);
 app.use("/api/employee", employeeRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/estate", estateRoute);
+// app.use("/api/token", tokenRoute);
 
 // Start server
 app.listen(PORT, () => {
