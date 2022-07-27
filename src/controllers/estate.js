@@ -1,4 +1,4 @@
-import Estate from "../models/estate.js";
+import Estate from "../models/Estate.js";
 import fs from "fs-extra";
 import { destroy, upload } from "../helper/imageUpload.js";
 
