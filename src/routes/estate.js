@@ -10,7 +10,7 @@ import {
 } from "../controllers/estate.js";
 import { validateFields } from "../middlewares/validateFields.js";
 import { checkUserExists } from "../middlewares/dbValidators.js";
-
+ 
 // Create a new router
 const router = Router();
 
