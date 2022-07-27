@@ -87,7 +87,7 @@ const estateSchema = Schema(
   },
   { timestamps: true }
 );
-
+ 
 estateSchema.methods.toJSON = function () {
   const { __v, _id, ...estate } = this.toObject();
   estate.uid = _id;

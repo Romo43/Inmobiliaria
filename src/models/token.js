@@ -35,5 +35,5 @@ tokenSchema.methods.toJSON = function () {
   token.uid = _id;
   return token;
 };
-
+ 
 export default model("Token", tokenSchema);
