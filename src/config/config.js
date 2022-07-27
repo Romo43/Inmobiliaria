@@ -3,9 +3,9 @@ import { config } from "dotenv";
 config();
 
 const {
-  PORT = 8080,
+  PORT,
   SECRET,
-  MONGO_URL = "mongodb://localhost:27017/test",
+  MONGO_URL,
   CLOUDINARY_NAME,
   CLOUDINARY_KEY,
   CLOUDINARY_SECRET,
