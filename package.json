@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "Real estate agency API",
   "type": "module",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev:cloud": "SET NODE_ENV=0 && SET MONGO_ENV=1 && nodemon src/index.js",
-    "dev:local": "SET NODE_ENV=0 && SET MONGO_ENV=0 && nodemon src/index.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +17,7 @@
     "cors": "2.8.5",
     "dotenv": "16.0.1",
     "express": "4.18.1",
+    "express-validator": "6.14.2",
     "fs-extra": "10.1.0",
     "jsonwebtoken": "8.5.1",
     "mongoose": "6.4.1",

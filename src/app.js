@@ -1,38 +1,50 @@
-import path from "path";
 import cors from "cors";
-import multer from "multer";
 import morgan from "morgan";
+import multer from "multer";
 import express from "express";
-import { PORT } from "./config.js";
-import  userRoutes from "./routes/user.js";
-import estateRoutes from "./routes/estate.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import "./database/database.js";
+import { PORT } from "./config/config.js";
+import adminRoute from "./routes/admin.js";
+import employeeRoute from "./routes/employee.js";
+import authRoute from "./routes/auth.js";
+import estateRoute from "./routes/estate.js";
+//import "./helper/createAdmin.js";
 
 // Initializations
 const app = express();
 
-// Settings
-app.set("port", PORT);
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
 
 // Middlewares
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "uploads")));
 
-// Save file locally
+// Multer middleware many files
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, __dirname, "src/uploads/");
+  destination: (req, file, cb) => {
+    cb(null, "src/uploads");
   },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + file.originalname);
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
   },
 });
-app.use(multer({ storage: storage }).array("media"));
+const uploadMany = multer({ storage: storage });
+app.use(uploadMany.array("image", 10));
 
 // Routes
-app.use("/api/AxioWeb/estate", estateRoutes);
-app.use("/api/AxioWeb/user", userRoutes);
+app.use("/api/admin", adminRoute);
+app.use("/api/employee", employeeRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/estate", estateRoute);
 
-// Export app
-export default app;
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

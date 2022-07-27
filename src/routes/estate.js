@@ -1,44 +1,54 @@
 import { Router } from "express";
+import { check } from "express-validator";
+import { verifyToken } from "../middlewares/authJWT.js";
+import {
+  allEstates,
+  findEstate,
+  createEstate,
+  updateEstate,
+  updateEstateStatus,
+} from "../controllers/estate.js";
+import { validateFields } from "../middlewares/validateFields.js";
+import { checkUserExists } from "../middlewares/dbValidators.js";
 
-// Verify token
-import {verifyToken,authorizedPersonalOnly} from "../middlewares/authJwt.js";
-// Get all estate controllers
-import {allPublicEstates, allUserEstates, findEstate,createEstate, updateEstate, updateEstateStatus,deleteEstate} from "../controllers/estate.controller.js";
-
+// Create a new router
 const router = Router();
-// Get all public estates
-router.get("/public_estates", allPublicEstates);
+
+// Middleware config
+router.use(verifyToken);
+router.use(checkUserExists);
+
 // Get all user estates
-router.get(
-  "/user_estates",
-  [verifyToken, authorizedPersonalOnly],
-  allUserEstates
-);
+router.get("/user_estates", allEstates);
 // Get estate by Id
-router.get("/:id", findEstate);
-// Create new estate
-router.post(
-  "/",
-  [verifyToken, authorizedPersonalOnly],
-  createEstate
+router.get(
+  "/:id",
+  [
+    check("id").trim().isMongoId().withMessage("Id is required"),
+    validateFields,
+  ],
+  findEstate
 );
+// Create new estate
+router.post("/create", createEstate);
 // Update all estate by Id
 router.patch(
   "/:id",
-  [verifyToken, authorizedPersonalOnly],
+  [
+    check("id").trim().isMongoId().withMessage("Id is required"),
+    validateFields,
+  ],
   updateEstate
 );
 // Update estate status by Id and status
 router.put(
-  "/:id",
-  [verifyToken, authorizedPersonalOnly],
+  "/update-status/:id",
+  [
+    check("id").trim().isMongoId().withMessage("Id is required"),
+    validateFields,
+  ],
   updateEstateStatus
 );
-// Delete este by Id
-router.delete(
-  "/:id",
-  [verifyToken, authorizedPersonalOnly],
-  deleteEstate
-);
 
+// Export the router
 export default router;

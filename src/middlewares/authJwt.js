@@ -1,52 +1,36 @@
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
-import Role from "../models/Role.js";
+import User from "../models/user.js";
+import Role from "../models/role.js";
+import { SECRET } from "../config/config.js";
 
 // Verify token
 const verifyToken = async (req, res, next) => {
-  let token = req.headers["x-access-token"];
-
-  if (!token) return res.status(403).json({ message: "No token provided" });
-
   try {
-    const decoded = jwt.verify(token, process.env.SECRET);
+    const token = req.headers["x-access-token"];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+    const decoded = jwt.verify(token, SECRET);    
     req.userId = decoded.id;
-    const user = await User.findById(req.userId, { password: 0 });
-    if (!user) return res.status(404).json({ message: "No user found" });
-
+    req.userEmail = decoded.email;
+    req.userUsername = decoded.username;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized!" });
+    return res.status(500).json({ message: error });
   }
 };
-// Verify authorized personal
-const authorizedPersonalOnly = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.userId);
-    const roles = await Role.find({ _id: { $in: user.roles } });
 
-    for (let i = 0; i < roles.length; i++) {
-      if (roles[i].name === "admin" || roles[i].name === "employee") {
-        next();
-        return;
-      }
-    }
-    return res.status(403).json({ message: "Authorized personal only" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: error });
-  }
-};
-// Verify that emails are not duplicated
-const checkDuplicateEmail = async (req, res, next) => {
+// Only admin
+const onlyAdmin = async (req, res, next) => {
+  const id = req.userId;
   try {
-    const email = await User.findOne({ email: req.body.email });
-    if (email)
-      return res.status(400).json({ message: "The email already exists" });
+    const user = await User.findById(id);
+    const role = await Role.findById(user.role);
+    if (role.name !== "admin")
+      return res.status(401).json({ message: "Unauthorized" });
     next();
   } catch (error) {
-    res.status(500).json({ message: error });
+    return res.status(500).json({ message: error });
   }
 };
 
-export { verifyToken, authorizedPersonalOnly, checkDuplicateEmail };
+// Export middlewares
+export { verifyToken, onlyAdmin };

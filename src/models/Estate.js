@@ -3,16 +3,27 @@ const { Schema, model } = mongoose;
 
 const estateSchema = Schema(
   {
-    name: String,
-    description: String,
-    price: String,
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
     estate_type: {
       type: String,
       enum: ["house", "department"],
+      required: true,
     },
     estate_status: {
       type: String,
-      enum: ["rent", "SALE"],
+      enum: ["rent", "sale"],
+      required: true,
     },
     status: {
       type: String,
@@ -21,7 +32,6 @@ const estateSchema = Schema(
     },
     imgs: [
       {
-        _id: false,
         id_media: String,
         media: String,
       },
@@ -29,16 +39,36 @@ const estateSchema = Schema(
     areas: [String],
     equipped: [String],
     details: {
-      terrain: String,
-      preserved: String,
-      service_room: Boolean,
-      rooms: Number,
-      floors: Number,
-      parking: Number,
-      construction: String,
-      old_estate: String,
-      bathrooms: String,
-      maintenance: String,
+      terrain: {
+        type: String,
+      },
+      preserved: {
+        type: String,
+      },
+      service_room: {
+        type: Boolean,
+      },
+      rooms: {
+        type: Number,
+      },
+      floors: {
+        type: Number,
+      },
+      parking: {
+        type: Number,
+      },
+      construction: {
+        type: String,
+      },
+      old_estate: {
+        type: String,
+      },
+      bathrooms: {
+        type: Number,
+      },
+      maintenance: {
+        type: Number,
+      },
     },
     location: {
       type: {

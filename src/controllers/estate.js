@@ -1,36 +1,31 @@
-import Estate from "../models/Estate.js";
-import User from "../models/User.js";
-import Role from "../models/Role.js";
+import Estate from "../models/estate.js";
 import fs from "fs-extra";
-import {destroy, upload} from "../helper/imageUpload.js";
+import { destroy, upload } from "../helper/imageUpload.js";
 
-// Get all public estates
-const allPublicEstates = async (req, res) => {
-  try {
-    const estates = await Estate.find();
-    res.status(200).json(estates);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 // Get all user estates
-const allUserEstates = async (req, res) => {
+const allEstates = async (req, res) => {
   try {
-    const user = await User.findById(req.userId);
     const userEstates = await Estate.find({
-      "contact.email": { $in: user.email },
+      "contact.email": { $in: req.userEmail },
     });
-    res.status(200).json(userEstates);
+    res.status(200).json({ data: userEstates });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 // Get estate by id
 const findEstate = async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   try {
-    const estate = await Estate.findById(id);
-    res.status(200).json(estate);
+    // Find one estate by id and user email
+    const estate = await Estate.findOne({
+      _id: id,
+      "contact.email": { $in: req.userEmail },
+    });
+    if (!estate) {
+      return res.status(404).json({ message: "Estate not found" });
+    }
+    res.status(200).json({ data: estate });
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
@@ -58,13 +53,12 @@ const createEstate = async (req, res) => {
     coordinates,
   } = req.body;
   try {
-    const user = await User.findById(req.userId);
-    const uploader = async (path) => uploads(path, "AxioWeb");
+    // Upload images
     const urls = [];
     const files = req.files;
     for (const file of files) {
       const { path } = file;
-      const newPath = await uploader(path);
+      const newPath = await upload(path);
       urls.push(newPath);
       fs.unlinkSync(path);
     }
@@ -93,19 +87,19 @@ const createEstate = async (req, res) => {
         coordinates,
       },
       contact: {
-        username: user.username,
-        email: user.email,
+        username: req.Username,
+        email: req.userEmail,
       },
     });
     await Estate.create(newEstate);
     res.status(201).json({ message: "Estate created successfully" });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 // Update estate by id
 const updateEstate = async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const {
     name,
     description,
@@ -129,19 +123,21 @@ const updateEstate = async (req, res) => {
   } = req.body;
   try {
     const data = await Estate.findById(id);
+    if (!data) {
+      return res.status(404).json({ message: "Estate not found" });
+    }
     // Destroy imgs
     const images = data.imgs;
     for (const image of images) {
       const id_media = image.id_media;
-    destroys(id_media);
+      destroy(id_media);
     }
     // Upload imgs
-    const uploader = async (path) => uploads(path, "AxioWeb");
     const urls = [];
     const files = req.files;
     for (const file of files) {
       const { path } = file;
-      const newPath = await uploader(path);
+      const newPath = await upload(path);
       urls.push(newPath);
       fs.unlinkSync(path);
     }
@@ -184,53 +180,28 @@ const updateEstate = async (req, res) => {
 };
 // Update estate status
 const updateEstateStatus = async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   try {
     const estate = await Estate.findById(id);
     if (!estate) {
       res.status(404).json({ message: "This estate does not exist" });
     }
-    if (estate.status === "SALE") {
-      await Estate.updateOne({ id }, { status: "SOLD" });
+    if (estate.status === "sale") {
+      await Estate.updateOne({ id }, { status: "sold" });
       res.status(200).json({ message: "Estate sold successfully" });
     } else {
-      await Estate.updateOne({ id }, { status: "SALE" });
+      await Estate.updateOne({ id }, { status: "sale" });
       res.status(200).json({ message: "Estate for sale again" });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-// Delete estate by id
-const deleteEstate = async (req, res) => {
-  const id = req.params.id;
-  try {
-    const user = await User.findById(req.userId);
-    const roles = await Role.find({ _id: { $in: user.roles } });
-    for (let i = 0; i < roles.length; i++) {
-      if (roles[i].name === "admin") {
-        const data = await Estate.findById(id);
-        const images = data.imgs;
-        for (const image of images) {
-          const id_media = image.id_media;
-        destroys(id_media);
-        }
-        await data.remove();
-        res.status(200).json({ message: "Estate deleted successfully" });
-      }
-    }
-    res.status(403).json({ message: "Require Admin Role!" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 
 export {
-  allPublicEstates,
-  allUserEstates,
+  allEstates,
   findEstate,
   createEstate,
   updateEstate,
   updateEstateStatus,
-  deleteEstate,
 };

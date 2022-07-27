@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 const { connect } = mongoose;
-import { CURRENT_ENV, CURRENT_DB, MONGO_URI } from "./config.js";
+import { MONGO_URL } from "../config/config.js";
 
 (async () => {
   try {
-    await connect(MONGO_URI, {
+    await connect(MONGO_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log(`Database running in ${CURRENT_ENV} ${CURRENT_DB}`);
+    console.log("Database connected successfully");
   } catch (error) {
     console.log("Error", error);
   }
