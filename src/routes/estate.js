@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { verifyToken } from "../middlewares/authJWT.js";
+import { verifyToken } from "../middlewares/authJwt.js";
 import {
   allEstates,
   findEstate,
