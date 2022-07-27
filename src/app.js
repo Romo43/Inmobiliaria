@@ -24,12 +24,12 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "uploads")));
+app.use(express.static(__dirname));
 
 // Multer middleware many files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "src/uploads");
+    cb(null, path.join(__dirname, '/uploads/'));
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
