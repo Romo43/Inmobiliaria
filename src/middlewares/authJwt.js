@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
-import Role from "../models/role.js";
+import User from "../models/User.js";
+import Role from "../models/Role.js";
 import { SECRET } from "../config/config.js";
 
 // Verify token

@@ -35,9 +35,9 @@ router.get("/estates", getAllEstates);
 router.post(
   "/employee",
   [
-    check("username").not().isEmpty().withMessage("Username is required"),
-    check("email").isEmail().withMessage("Email is required"),
-    check("primary_email").isEmail().withMessage("Primary email is required"),
+    check("username", "Username is required").not().isEmpty(),
+    check("email", "Email is required").isEmail(),
+    check("primary_email", "Primary email is required").isEmail(),
     validateFields,
     checkEmailExists,
     checkPrimaryEmailExists,
@@ -49,10 +49,10 @@ router.post(
 router.put(
   "/employee/:id",
   [
-    check("id").trim().isMongoId().withMessage("Id is required"),
-    check("username").not().isEmpty().withMessage("Username is required"),
-    check("email").isEmail().withMessage("Email is required"),
-    check("primary_email").isEmail().withMessage("Primary email is required"),
+    check("id", "Id is required").trim().isMongoId(),
+    check("username", "Username is required").not().isEmpty(),
+    check("email", "Email is required").isEmail(),
+    check("primary_email", "Primary email is required").isEmail(),
     validateFields,
     checkEmailExists,
     checkPrimaryEmailExists,
@@ -64,7 +64,7 @@ router.put(
 router.delete(
   "/employee/:id",
   [
-    check("id").trim().isMongoId().withMessage("Id is required"),
+    check("id", "Id is required").trim().isMongoId(),
     validateFields,
     checkUserExistsByParamsId,
   ],
@@ -74,10 +74,7 @@ router.delete(
 // Delete estate by Id
 router.delete(
   "/estate/:id",
-  [
-    check("id").trim().isMongoId().withMessage("Id is required"),
-    validateFields,
-  ],
+  [check("id", "Id is required").trim().isMongoId(), validateFields],
   deleteEstateById
 );
 

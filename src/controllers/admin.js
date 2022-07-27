@@ -1,6 +1,6 @@
-import User from "../models/user.js";
-import Role from "../models/role.js";
-import Estate from "../models/estate.js";
+import User from "../models/User.js";
+import Role from "../models/Role.js";
+import Estate from "../models/Estate.js";
 import { destroy } from "../helper/imageUpload.js";
 
 // Get all employees

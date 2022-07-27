@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { verifyToken } from "../middlewares/authJWT.js";
+import { verifyToken } from "../middlewares/authJwt.js";
 import {
   allEstates,
   findEstate,
@@ -23,10 +23,7 @@ router.get("/user_estates", allEstates);
 // Get estate by Id
 router.get(
   "/:id",
-  [
-    check("id").trim().isMongoId().withMessage("Id is required"),
-    validateFields,
-  ],
+  [check("id", "Id is required").trim().isMongoId(), validateFields],
   findEstate
 );
 // Create new estate
@@ -34,19 +31,13 @@ router.post("/create", createEstate);
 // Update all estate by Id
 router.patch(
   "/:id",
-  [
-    check("id").trim().isMongoId().withMessage("Id is required"),
-    validateFields,
-  ],
+  [check("id", "Id is required").trim().isMongoId(), validateFields],
   updateEstate
 );
 // Update estate status by Id and status
 router.put(
   "/update-status/:id",
-  [
-    check("id").trim().isMongoId().withMessage("Id is required"),
-    validateFields,
-  ],
+  [check("id", "Id is required").trim().isMongoId(), validateFields],
   updateEstateStatus
 );
 

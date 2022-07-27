@@ -1,4 +1,4 @@
-import User from "../models/user.js";
+import User from "../models/User.js";
 
 // Check if user exists by params id
 const checkUserExistsByParamsId = async (req, res, next) => {

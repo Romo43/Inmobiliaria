@@ -33,7 +33,7 @@ const tokenSchema = new Schema({
 tokenSchema.methods.toJSON = function () {
   const { __v, _id, ...token } = this.toObject();
   token.uid = _id;
-  return token;
+  return token; 
 };
-
+ 
 export default model("Token", tokenSchema);

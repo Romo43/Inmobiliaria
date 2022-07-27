@@ -60,7 +60,7 @@ const estateSchema = Schema(
       construction: {
         type: String,
       },
-      old_estate: {
+      old_estate: { 
         type: String,
       },
       bathrooms: {
@@ -87,7 +87,7 @@ const estateSchema = Schema(
   },
   { timestamps: true }
 );
-
+ 
 estateSchema.methods.toJSON = function () {
   const { __v, _id, ...estate } = this.toObject();
   estate.uid = _id;

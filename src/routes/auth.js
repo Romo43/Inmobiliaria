@@ -11,7 +11,7 @@ router.post(
   "/login",
   [
     check("email", "Email is required").isEmail(),
-    check("password", "Password is required").exists(),
+    check("password", "Password is required").trim(),
     validateFields,
   ],
   login

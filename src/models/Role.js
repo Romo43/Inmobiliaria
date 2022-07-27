@@ -8,5 +8,6 @@ roleSchema.methods.toJSON = function () {
   role.uid = _id;
   return role;
 };
-
+ 
 export default model("Role", roleSchema);
+ 
