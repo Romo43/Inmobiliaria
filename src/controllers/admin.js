@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import Role from "../models/Role.js";
 import Estate from "../models/Estate.js";
-import Token from "../models/Token.js";
+import Token from "../models/token.js";
 import { destroyUrls } from "../helper/imageUpload.js";
 
 // Get all employees
