@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import Role from "../models/Role.js";
 import Estate from "../models/Estate.js";
+import Token from "../models/Token.js";
 import { destroyUrls } from "../helper/imageUpload.js";
 
 // Get all employees
@@ -12,6 +13,32 @@ const getAllEmployees = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(limit);
     res.status(200).json({ data: employees });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// Get all estates
+const getAllEstates = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const estates = await Estate.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).json({ data: estates });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// Get all tokens
+const getAllTokens = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const tokens = await Token.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).json({ data: tokens });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -29,16 +56,17 @@ const getEmployeeById = async (req, res) => {
   }
 };
 
-// Get all estates
-const getAllEstates = async (req, res) => {
+// Get estate by id
+const getEstateById = async (req, res) => {
+  const { id } = req.params;
   try {
     const { page = 1, limit = 10 } = req.query;
-    const estates = await Estate.find()
+    const estate = await Estate.findById(id)
       .skip((page - 1) * limit)
       .limit(limit);
-    res.status(200).json({ data: estates });
+    res.status(200).json({ data: estate });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -96,8 +124,9 @@ const deleteEstateById = async (req, res) => {
   const { id } = req.params;
   try {
     const estate = await Estate.findById(id);
+    // Delete images
     await destroyUrls(estate.imgs);
-    await data.remove();
+    await estate.remove();
     res.status(200).json({ message: "Estate deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -106,10 +135,12 @@ const deleteEstateById = async (req, res) => {
 
 export {
   getAllEmployees,
-  getEmployeeById,
   getAllEstates,
+  getAllTokens,
+  getEmployeeById,
+  getEstateById,
   createEmployee,
-  deleteEmployeeById,
   updateEmployeeById,
+  deleteEmployeeById,
   deleteEstateById,
 };
