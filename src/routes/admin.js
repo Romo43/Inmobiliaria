@@ -3,8 +3,10 @@ import { check } from "express-validator";
 import { verifyToken, onlyAdmin } from "../middlewares/authJwt.js";
 import {
   getAllEmployees,
-  getEmployeeById,
   getAllEstates,
+  getAllTokens,
+  getEmployeeById,
+  getEstateById,
   createEmployee,
   updateEmployeeById,
   deleteEmployeeById,
@@ -30,6 +32,12 @@ router.use(onlyAdmin);
 // Get all employees
 router.get("/employees", getAllEmployees);
 
+// Get all estates
+router.get("/estates", getAllEstates);
+
+// Get all tokens
+router.get("/tokens", getAllTokens);
+
 // Get employee by id
 router.get(
   "/employee/:id",
@@ -41,8 +49,16 @@ router.get(
   getEmployeeById
 );
 
-// Get all estates
-router.get("/estates", getAllEstates);
+// Get estate by id
+router.get(
+  "/estate/:id",
+  [
+    check("id", "Id is required").trim().isMongoId(),
+    validateFields,
+    checkEstateExistsByParamsId,
+  ],
+  getEstateById
+);
 
 // Create employees
 router.post(
@@ -51,7 +67,9 @@ router.post(
     check("username", "Username is required").not().isEmpty(),
     check("email", "Email is required").isEmail(),
     check("primary_email", "Primary email is required").isEmail(),
-    check("phone", "Phone is required").isMobilePhone().isLength({ min: 10, max: 10 }),
+    check("phone", "Phone is required")
+      .isMobilePhone()
+      .isLength({ min: 10, max: 10 }),
     validateFields,
     checkEmailExists,
     checkPrimaryEmailExists,
@@ -67,7 +85,9 @@ router.put(
     check("username", "Username is required").not().isEmpty(),
     check("email", "Email is required").isEmail(),
     check("primary_email", "Primary email is required").isEmail(),
-    check("phone", "Phone is required").isMobilePhone().isLength({ min: 10, max: 10 }),
+    check("phone", "Phone is required")
+      .isMobilePhone()
+      .isLength({ min: 10, max: 10 }),
     validateFields,
     checkEmailExists,
     checkPrimaryEmailExists,

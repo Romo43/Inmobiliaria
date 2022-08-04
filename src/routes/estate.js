@@ -10,7 +10,10 @@ import {
   updateEstateStatusById,
 } from "../controllers/estate.js";
 import { validateFields } from "../middlewares/validateFields.js";
-import { checkUserExists } from "../middlewares/dbValidators.js";
+import {
+  checkUserExists,
+  checkEstateExistsByParamsId,
+} from "../middlewares/dbValidators.js";
 
 // Create a new router
 const router = Router();
@@ -28,7 +31,11 @@ router.get("/user_estates", allEstates);
 // Get estate by Id
 router.get(
   "/:id",
-  [check("id", "Id is required").trim().isMongoId(), validateFields],
+  [
+    check("id", "Id is required").trim().isMongoId(),
+    validateFields,
+    checkEstateExistsByParamsId,
+  ],
   findEstateById
 );
 
@@ -91,6 +98,7 @@ router.patch(
     check("maintenance", "Maintenance is required").trim().isNumeric(),
     check("coordinates", "Coordinates is required").trim(),
     validateFields,
+    checkEstateExistsByParamsId,
   ],
   updateEstateById
 );
@@ -98,7 +106,11 @@ router.patch(
 // Update estate status by Id and status
 router.put(
   "/update-status/:id",
-  [check("id", "Id is required").trim().isMongoId(), validateFields],
+  [
+    check("id", "Id is required").trim().isMongoId(),
+    validateFields,
+    checkEstateExistsByParamsId,
+  ],
   updateEstateStatusById
 );
 
