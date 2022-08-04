@@ -9,9 +9,10 @@ const verifyToken = async (req, res, next) => {
     const token = req.headers["x-access-token"];
     if (!token) return res.status(401).json({ message: "Unauthorized" });
     const decoded = jwt.verify(token, SECRET);    
-    req.userId = decoded.id;
-    req.userEmail = decoded.email;
-    req.userUsername = decoded.username;
+    req.userId = decoded.user.uid;
+    req.userEmail = decoded.user.email;
+    req.userUsername = decoded.user.username;
+    req.userPhone = decoded.user.phone;
     next();
   } catch (error) {
     return res.status(500).json({ message: error });

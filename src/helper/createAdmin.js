@@ -7,10 +7,10 @@ import Role from "../models/Role.js";
     const adminRole = await Role.findOne({ name: "admin" });
     if (!adminRole) return;
     const newUser = new User({
-      username: "admin",
-      email: "admin@webdev.com",
-      primary_email: "admin@gmail.com",
-      password: await User.encryptPassword("admin"),
+      username: "admin2",
+      email: "admin2@webdev.com",
+      primary_email: "admin2@gmail.com",
+      password: await User.encryptPassword("admin2"),
       role: adminRole._id,
     });
     const savedUser = await newUser.save();

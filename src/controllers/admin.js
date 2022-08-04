@@ -1,23 +1,41 @@
 import User from "../models/User.js";
 import Role from "../models/Role.js";
 import Estate from "../models/Estate.js";
-import { destroy } from "../helper/imageUpload.js";
+import { destroyUrls } from "../helper/imageUpload.js";
 
 // Get all employees
 const getAllEmployees = async (req, res) => {
   try {
-    const role = await Role.find({ name: "employee" });
-    const employees = await User.find({ role: { $in: role } });
+    const { page = 1, limit = 10 } = req.query;
+    const role = await Role.findOne({ name: "employee" });
+    const employees = await User.find({ role: role._id })
+      .skip((page - 1) * limit)
+      .limit(limit);
     res.status(200).json({ data: employees });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
 
+// Get employee by id
+const getEmployeeById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const role = await Role.findOne({ name: "employee" });
+    const employee = await User.findOne({ _id: id, role: role });
+    res.status(200).json({ data: employee });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // Get all estates
 const getAllEstates = async (req, res) => {
   try {
-    const estates = await Estate.find();
+    const { page = 1, limit = 10 } = req.query;
+    const estates = await Estate.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
     res.status(200).json({ data: estates });
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -27,11 +45,12 @@ const getAllEstates = async (req, res) => {
 // Create employee
 const createEmployee = async (req, res) => {
   try {
-    const { username, email, primary_email } = req.body;
+    const { username, email, primary_email, phone } = req.body;
     let employee = await User.create({
       username,
       email,
       primary_email,
+      phone,
       password: await User.encryptPassword(username),
     });
     const role = await Role.findOne({ name: "employee" });
@@ -45,13 +64,14 @@ const createEmployee = async (req, res) => {
 
 // Update employee by id
 const updateEmployeeById = async (req, res) => {
-  const { username, email, primary_email } = req.body;
+  const { username, email, primary_email, phone } = req.body;
   const { id } = req.params;
   try {
     let employee = await User.findById(id);
     employee.username = username;
     employee.email = email;
     employee.primary_email = primary_email;
+    employee.phone = phone;
     await employee.save();
     res.status(200).json({ message: "User updated successfully" });
   } catch (err) {
@@ -75,12 +95,8 @@ const deleteEmployeeById = async (req, res) => {
 const deleteEstateById = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await Estate.findById(id);
-    const images = data.imgs;
-    for (const image of images) {
-      const id_media = image.id_media;
-      destroy(id_media);
-    }
+    const estate = await Estate.findById(id);
+    await destroyUrls(estate.imgs);
     await data.remove();
     res.status(200).json({ message: "Estate deleted successfully" });
   } catch (err) {
@@ -90,6 +106,7 @@ const deleteEstateById = async (req, res) => {
 
 export {
   getAllEmployees,
+  getEmployeeById,
   getAllEstates,
   createEmployee,
   deleteEmployeeById,
