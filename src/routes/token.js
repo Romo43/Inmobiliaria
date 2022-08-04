@@ -1,6 +1,6 @@
 import { Router } from "express";
 // import { check } from "express-validator";
-import { verifyToken } from "../middlewares/authJWT.js";
+import { verifyToken } from "../middlewares/authJwt.js";
 import { checkUserExists } from "../middlewares/dbValidators.js";
 // import { validateFields } from "../middlewares/validateFields.js";
 import { generateToken } from "../controllers/token.js";
