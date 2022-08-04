@@ -19,6 +19,6 @@ const generateToken = async (req, res) => {
 };
 
 // Validate token
-const validateToken = async (req, res) => {};
+// const validateToken = async (req, res) => {};
 
-export { generateToken, validateToken };
+export { generateToken };
