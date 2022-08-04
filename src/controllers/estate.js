@@ -4,10 +4,8 @@ import { generateUrl, destroyUrls } from "../helper/imageUpload.js";
 // Estate search by search term, category, orderBy, order, limit, skip, createdAt, rooms params
 const searchEstate = async (req, res) => {
   try {
-    const { search, orderBy, rooms, category, limit, page } = req.query;
-    const query = {
-      "details.rooms": { $in: rooms },
-      category: { $in: category },
+    const { search, orderBy = "1", rooms, category, limit, page } = req.query;
+    var query = {
       "contact.email": { $in: req.userEmail },
     };
     if (search) {
@@ -17,9 +15,9 @@ const searchEstate = async (req, res) => {
       query.category = category;
     }
     if (rooms) {
-      query.rooms = rooms;
+      query = { ...query, "details.rooms": { $in: rooms } };
     }
-    // Switch orderBy
+    
     switch (orderBy) {
       // sort from oldest to newest
       case "0":
