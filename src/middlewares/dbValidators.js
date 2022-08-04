@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import Estate from "../models/Estate.js";
+import Token from "../models/token.js";
 
 // Check if user exists by params id
 const checkUserExistsByParamsId = async (req, res, next) => {
@@ -64,6 +65,24 @@ const checkPrimaryEmailExists = async (req, res, next) => {
   }
 };
 
+// Check if user has a token with status true and is expired
+const checkUserHasToken = async (req, res, next) => {
+  try {
+    const token = await Token.findOne({ user: req.userId, status: true });
+    if (token) {
+      // Check if token is expired
+      if (token.expiresIn < Date.now()) {
+        await Token.findByIdAndUpdate(token._id, { status: false });
+        return res.status(401).json({ message: "You already had an active request, try again" });
+      }
+      return res.status(400).json({ message: "User already has a token" });
+    }
+    next();
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
 // Export helpers
 export {
   checkUserExistsByParamsId,
@@ -71,4 +90,5 @@ export {
   checkUserExists,
   checkEmailExists,
   checkPrimaryEmailExists,
+  checkUserHasToken,
 };
