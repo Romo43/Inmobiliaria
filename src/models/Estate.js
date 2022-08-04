@@ -15,7 +15,7 @@ const estateSchema = Schema(
       type: Number,
       required: true,
     },
-    estate_type: {
+    category: {
       type: String,
       enum: ["house", "department"],
       required: true,
@@ -60,7 +60,7 @@ const estateSchema = Schema(
       construction: {
         type: String,
       },
-      old_estate: { 
+      old_estate: {
         type: String,
       },
       bathrooms: {
@@ -81,13 +81,24 @@ const estateSchema = Schema(
       },
     },
     contact: {
-      username: String,
-      email: String,
+      uid: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+      username: {
+        type: String,
+      },
+      email: {
+        type: String,
+      },
+      phone: {
+        type: Number,
+      },
     },
   },
   { timestamps: true }
 );
- 
+
 estateSchema.methods.toJSON = function () {
   const { __v, _id, ...estate } = this.toObject();
   estate.uid = _id;

@@ -2,11 +2,12 @@ import { Router } from "express";
 import { check } from "express-validator";
 import { verifyToken } from "../middlewares/authJwt.js";
 import {
+  searchEstate,
   allEstates,
-  findEstate,
+  findEstateById,
   createEstate,
-  updateEstate,
-  updateEstateStatus,
+  updateEstateById,
+  updateEstateStatusById,
 } from "../controllers/estate.js";
 import { validateFields } from "../middlewares/validateFields.js";
 import { checkUserExists } from "../middlewares/dbValidators.js";
@@ -19,15 +20,18 @@ router.use(verifyToken);
 router.use(checkUserExists);
 
 // Estate search
+router.get("/search", searchEstate);
 
 // Get all user estates
 router.get("/user_estates", allEstates);
+
 // Get estate by Id
 router.get(
   "/:id",
   [check("id", "Id is required").trim().isMongoId(), validateFields],
-  findEstate
+  findEstateById
 );
+
 // Create new estate
 router.post(
   "/create",
@@ -35,7 +39,7 @@ router.post(
     check("name", "Name is required").trim(),
     check("description", "Description is required").trim(),
     check("price", "Price is required").trim().isNumeric(),
-    check("estate_type", "Estate type is required")
+    check("category", "Category is required")
       .trim()
       .isIn(["department", "house"]),
     check("estate_status", "Estate status is required")
@@ -58,6 +62,7 @@ router.post(
   ],
   createEstate
 );
+
 // Update all estate by Id
 router.patch(
   "/:id",
@@ -66,7 +71,7 @@ router.patch(
     check("name", "Name is required").trim(),
     check("description", "Description is required").trim(),
     check("price", "Price is required").trim().isNumeric(),
-    check("estate_type", "Estate type is required")
+    check("category", "Category type is required")
       .trim()
       .isIn(["department", "house"]),
     check("estate_status", "Estate status is required")
@@ -87,13 +92,14 @@ router.patch(
     check("coordinates", "Coordinates is required").trim(),
     validateFields,
   ],
-  updateEstate
+  updateEstateById
 );
+
 // Update estate status by Id and status
 router.put(
   "/update-status/:id",
   [check("id", "Id is required").trim().isMongoId(), validateFields],
-  updateEstateStatus
+  updateEstateStatusById
 );
 
 // Export the router

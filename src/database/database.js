@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-const { connect } = mongoose;
 import { MONGO_URL } from "../config/config.js";
+const { connect } = mongoose;
 
 (async () => {
   try {

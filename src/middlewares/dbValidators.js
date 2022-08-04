@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Estate from "../models/Estate.js";
 
 // Check if user exists by params id
 const checkUserExistsByParamsId = async (req, res, next) => {
@@ -6,6 +7,17 @@ const checkUserExistsByParamsId = async (req, res, next) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
     next();
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// Check if estate exists by params id
+const checkEstateExistsByParamsId = async (req, res, next) => {
+  const { id } = req.body;
+  try {
+    const estate = await Estate.findById(id);
+    if (estate) return res.status(404).json({ message: "Estate not found" });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -52,4 +64,10 @@ const checkPrimaryEmailExists = async (req, res, next) => {
 };
 
 // Export helpers
-export { checkUserExistsByParamsId, checkUserExists, checkEmailExists, checkPrimaryEmailExists };
+export {
+  checkUserExistsByParamsId,
+  checkEstateExistsByParamsId,
+  checkUserExists,
+  checkEmailExists,
+  checkPrimaryEmailExists,
+};

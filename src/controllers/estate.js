@@ -1,23 +1,87 @@
 import Estate from "../models/Estate.js";
-import fs from "fs-extra";
-import { destroy, upload } from "../helper/imageUpload.js";
+import { generateUrl, destroyUrls } from "../helper/imageUpload.js";
 
-// Estate search
-
+// Estate search by search term, category, orderBy, order, limit, skip, createdAt, rooms params
+const searchEstate = async (req, res) => {
+  try {
+    const { search, orderBy, rooms, category, limit, page } = req.query;
+    const query = {
+      "details.rooms": { $in: rooms },
+      category: { $in: category },
+      "contact.email": { $in: req.userEmail },
+    };
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+    if (category) {
+      query.category = category;
+    }
+    if (rooms) {
+      query.rooms = rooms;
+    }
+    // Switch orderBy
+    switch (orderBy) {
+      // sort from oldest to newest
+      case "0":
+        const estates3 = await Estate.find(query)
+          .sort({ createdAt: 1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
+        res.status(200).json(estates3);
+        break;
+      // sort from newest to oldest
+      case "1":
+        const estates2 = await Estate.find(query)
+          .sort({ createdAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
+        res.status(200).json(estates2);
+        break;
+      // sort from cheapest to most expensive
+      case "2":
+        const estates = await Estate.find(query)
+          .sort({ price: 1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
+        res.status(200).json(estates);
+        break;
+      // sort from most expensive to cheapest
+      case "3":
+        const estates1 = await Estate.find(query)
+          .sort({ price: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
+        res.status(200).json(estates1);
+        break;
+      default:
+        const estates4 = await Estate.find(query)
+          .skip((page - 1) * limit)
+          .limit(limit);
+        res.status(200).json(estates4);
+        break;
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // Get all user estates
 const allEstates = async (req, res) => {
   try {
+    const { page = 1, limit = 10 } = req.query;
     const userEstates = await Estate.find({
       "contact.email": { $in: req.userEmail },
-    });
+    })
+      .skip((page - 1) * limit)
+      .limit(limit);
     res.status(200).json({ data: userEstates });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 // Get estate by id
-const findEstate = async (req, res) => {
+const findEstateById = async (req, res) => {
   const { id } = req.params;
   try {
     // Find one estate by id and user email
@@ -33,13 +97,14 @@ const findEstate = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
 // Create estate
 const createEstate = async (req, res) => {
   const {
     name,
     description,
     price,
-    estate_type,
+    category,
     estate_status,
     areas,
     equipped,
@@ -57,19 +122,12 @@ const createEstate = async (req, res) => {
   } = req.body;
   try {
     // Upload images
-    const urls = [];
-    const files = req.files;
-    for (const file of files) {
-      const { path } = file;
-      const newPath = await upload(path);
-      urls.push(newPath);
-      fs.unlinkSync(path);
-    }
+    const urls = await generateUrl(req.files);
     const newEstate = new Estate({
       name,
       description,
       price,
-      estate_type,
+      category,
       estate_status,
       imgs: urls,
       areas,
@@ -90,24 +148,28 @@ const createEstate = async (req, res) => {
         coordinates,
       },
       contact: {
-        username: req.Username,
+        uid: req.userId,
+        username: req.userUsername,
         email: req.userEmail,
+        phone: req.userPhone,
       },
     });
     await Estate.create(newEstate);
+
     res.status(201).json({ message: "Estate created successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 // Update estate by id
-const updateEstate = async (req, res) => {
+const updateEstateById = async (req, res) => {
   const { id } = req.params;
   const {
     name,
     description,
     price,
-    estate_type,
+    category,
     estate_status,
     areas,
     equipped,
@@ -129,27 +191,17 @@ const updateEstate = async (req, res) => {
     if (!data) {
       return res.status(404).json({ message: "Estate not found" });
     }
-    // Destroy imgs
-    const images = data.imgs;
-    for (const image of images) {
-      const id_media = image.id_media;
-      destroy(id_media);
-    }
     // Upload imgs
-    const urls = [];
-    const files = req.files;
-    for (const file of files) {
-      const { path } = file;
-      const newPath = await upload(path);
-      urls.push(newPath);
-      fs.unlinkSync(path);
-    }
+    const urls = await generateUrl(req.files);
+    // Destroy imgs
+    await destroyUrls(data.imgs);
+
     const newEstate = new Estate({
       _id: id,
       name: name,
       description: description,
       price: price,
-      estate_type: estate_type,
+      category: category,
       estate_status: estate_status,
       imgs: urls,
       areas: areas,
@@ -171,8 +223,10 @@ const updateEstate = async (req, res) => {
         coordinates: coordinates,
       },
       contact: {
+        uid: data.contact._id,
         username: data.contact.username,
         email: data.contact.email,
+        phone: data.contact.phone,
       },
     });
     await Estate.findByIdAndUpdate(id, newEstate);
@@ -181,8 +235,9 @@ const updateEstate = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
 // Update estate status
-const updateEstateStatus = async (req, res) => {
+const updateEstateStatusById = async (req, res) => {
   const { id } = req.params;
   try {
     const estate = await Estate.findById(id);
@@ -202,9 +257,10 @@ const updateEstateStatus = async (req, res) => {
 };
 
 export {
+  searchEstate,
   allEstates,
-  findEstate,
+  findEstateById,
   createEstate,
-  updateEstate,
-  updateEstateStatus,
+  updateEstateById,
+  updateEstateStatusById,
 };

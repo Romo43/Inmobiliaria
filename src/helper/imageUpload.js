@@ -1,4 +1,5 @@
 import cloudinary from "cloudinary";
+import fs from "fs-extra";
 import { CLOUDINARY } from "../config/config.js";
 
 // Cloudinary configuration
@@ -9,7 +10,26 @@ cloudinary.config({
   secure: true,
 });
 
-// Upload each image and get the public_id and url
+// Upload each image
+const generateUrl = async (files) => {
+  const urls = [];
+  for (const file of files) {
+    const url = await upload(file.path);
+    urls.push(url);
+    fs.unlinkSync(file.path);
+  }
+
+  return urls;  
+};
+
+// Destroy each image
+const destroyUrls = async (images) =>{
+  for (const image of images) {
+    await destroy(image.id_media);
+  }
+}
+
+// Upload image and get the public_id
 const upload = async (file) => {
   return new Promise((resolve) => {
     cloudinary.uploader.upload(
@@ -28,9 +48,9 @@ const upload = async (file) => {
   });
 };
 
-// Destroy each image by means of the id_public
+// Destroy image by id_media
 const destroy = async (id_media) => {
   await cloudinary.v2.uploader.destroy(id_media);
 };
 
-export { upload, destroy };
+export { generateUrl, destroyUrls };
