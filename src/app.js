@@ -36,8 +36,9 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-const uploadMany = multer({ storage: storage });
-app.use(uploadMany.array("image", 10));
+const upload = multer({ storage: storage });
+//app.use(upload.single("image"));
+app.use(upload.array("image", 10));
 
 // Routes
 app.use("/api/admin", adminRoute);

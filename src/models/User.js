@@ -15,6 +15,13 @@ const userSchema = new Schema({
     type: String,
     unique: true,
   },
+  phone: {
+    type: Number,
+    require: true,
+    minlength: 10,
+    maxlength: 10,
+    unique: true,
+  },
   password: {
     type: String,
     required: true,
@@ -34,8 +41,16 @@ const userSchema = new Schema({
 });
 
 userSchema.methods.toJSON = function () {
-  const { __v, _id, password, primary_email, role, change_password, ...user } =
-    this.toObject();
+  const {
+    __v,
+    _id,
+    password,
+    primary_email,
+    role,
+    change_password,
+    created_at,
+    ...user
+  } = this.toObject();
   user.uid = _id;
   return user;
 };
@@ -48,5 +63,5 @@ userSchema.statics.encryptPassword = async (password) => {
 userSchema.statics.comparePassword = async (password, receivedPassword) => {
   return await bcrypt.compare(password, receivedPassword);
 };
- 
-export default model("User", userSchema); 
+
+export default model("User", userSchema);

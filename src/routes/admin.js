@@ -3,6 +3,7 @@ import { check } from "express-validator";
 import { verifyToken, onlyAdmin } from "../middlewares/authJwt.js";
 import {
   getAllEmployees,
+  getEmployeeById,
   getAllEstates,
   createEmployee,
   updateEmployeeById,
@@ -10,12 +11,13 @@ import {
   deleteEstateById,
 } from "../controllers/admin.js";
 import {
+  checkUserExistsByParamsId,
+  checkEstateExistsByParamsId,
+  checkUserExists,
   checkEmailExists,
   checkPrimaryEmailExists,
-  checkUserExistsByParamsId,
 } from "../middlewares/dbValidators.js";
 import { validateFields } from "../middlewares/validateFields.js";
-import { checkUserExists } from "../middlewares/dbValidators.js";
 
 // Create a new router
 const router = Router();
@@ -28,6 +30,17 @@ router.use(onlyAdmin);
 // Get all employees
 router.get("/employees", getAllEmployees);
 
+// Get employee by id
+router.get(
+  "/employee/:id",
+  [
+    check("id", "Id is required").trim().isMongoId(),
+    validateFields,
+    checkUserExistsByParamsId,
+  ],
+  getEmployeeById
+);
+
 // Get all estates
 router.get("/estates", getAllEstates);
 
@@ -38,6 +51,7 @@ router.post(
     check("username", "Username is required").not().isEmpty(),
     check("email", "Email is required").isEmail(),
     check("primary_email", "Primary email is required").isEmail(),
+    check("phone", "Phone is required").isMobilePhone().isLength({ min: 10, max: 10 }),
     validateFields,
     checkEmailExists,
     checkPrimaryEmailExists,
@@ -53,9 +67,11 @@ router.put(
     check("username", "Username is required").not().isEmpty(),
     check("email", "Email is required").isEmail(),
     check("primary_email", "Primary email is required").isEmail(),
+    check("phone", "Phone is required").isMobilePhone().isLength({ min: 10, max: 10 }),
     validateFields,
     checkEmailExists,
     checkPrimaryEmailExists,
+    checkUserExistsByParamsId,
   ],
   updateEmployeeById
 );
@@ -74,7 +90,11 @@ router.delete(
 // Delete estate by Id
 router.delete(
   "/estate/:id",
-  [check("id", "Id is required").trim().isMongoId(), validateFields],
+  [
+    check("id", "Id is required").trim().isMongoId(),
+    validateFields,
+    checkEstateExistsByParamsId,
+  ],
   deleteEstateById
 );
 
