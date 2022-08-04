@@ -25,15 +25,13 @@ const tokenSchema = new Schema({
   // Expires in 5 minutes
   expiresIn: {
     type: Date,
-    default: Date.now,
-    expires: 300000,
   },
 });
 
 tokenSchema.methods.toJSON = function () {
   const { __v, _id, ...token } = this.toObject();
   token.uid = _id;
-  return token; 
+  return token;
 };
- 
+
 export default model("Token", tokenSchema);
