@@ -45,7 +45,6 @@ userSchema.methods.toJSON = function () {
     __v,
     _id,
     password,
-    primary_email,
     role,
     change_password,
     created_at,
