@@ -1,9 +1,13 @@
 import Token from "../models/token.js";
+import User from "../models/User.js";
 
 // Generate token
 const generateToken = async (req, res) => {
   try {
-    const token = Math.floor(Math.random() * 1000000);
+    // Generate number with 6 between 100000 and 999999
+    const token = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+
+    // const token = Math.floor(Math.random() * 1000000);
     const dateNow = new Date();
     const newToken = new Token({
       token: token,
@@ -19,6 +23,18 @@ const generateToken = async (req, res) => {
 };
 
 // Validate token
-// const validateToken = async (req, res) => {};
+const validateToken = async (req, res) => {
+  const { token } = req.body;
+  try {
+    const userToken = await Token.findOne({
+      user: req.userId,
+      token: token,
+      status: true,
+    });
+    await Token.findByIdAndUpdate(userToken._id, { status: false });
+    await User.findByIdAndUpdate(req.userId, { change_password: true });
+    res.status(200).json({ message: "Token validated" });
+  } catch (err) {}
+};
 
-export { generateToken };
+export { generateToken, validateToken };

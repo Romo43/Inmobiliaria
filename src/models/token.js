@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 
 const tokenSchema = new Schema({
   token: {
-    type: String,
+    type: Number,
     required: true,
     trim: true,
     minlength: 6,
