@@ -44,8 +44,8 @@ const checkEmailExists = async (req, res, next) => {
     if (email)
       return res.status(400).json({ message: "The email already exists" });
     next();
-  } catch (error) {
-    res.status(500).json({ message: error });
+  } catch (err) {
+    res.status(500).json({ message: err });
   }
 };
 
@@ -60,8 +60,23 @@ const checkPrimaryEmailExists = async (req, res, next) => {
         .status(400)
         .json({ message: "The primary email already exists" });
     next();
-  } catch (error) {
-    res.status(500).json({ message: error });
+  } catch (err) {
+    res.status(500).json({ message: err });
+  }
+};
+
+// Check if change password is true
+const checkChangePassword = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (user.change_password)
+      return res.status(400).json({
+        message:
+          "User can not generate or validate token if change_password is true",
+      });
+    next();
+  } catch (err) {
+    res.status(500).json({ message: err });
   }
 };
 
@@ -73,9 +88,29 @@ const checkUserHasToken = async (req, res, next) => {
       // Check if token is expired
       if (token.expiresIn < Date.now()) {
         await Token.findByIdAndUpdate(token._id, { status: false });
-        return res.status(401).json({ message: "You already had an active request, try again" });
+        return res
+          .status(401)
+          .json({ message: "You already had an active request, try again" });
       }
       return res.status(400).json({ message: "User already has a token" });
+    }
+    next();
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// Check if token exists and is valid
+const checkTokenExists = async (req, res, next) => {
+  const { token } = req.body;
+  try {
+    const userToken = await Token.findOne({
+      user: req.userId,
+      token: token,
+      status: true,
+    });
+    if (!userToken || userToken.expiresIn < Date.now()) {
+      return res.status(401).json({ message: "Invalid token" });
     }
     next();
   } catch (err) {
@@ -90,5 +125,7 @@ export {
   checkUserExists,
   checkEmailExists,
   checkPrimaryEmailExists,
+  checkChangePassword,
   checkUserHasToken,
+  checkTokenExists,
 };
