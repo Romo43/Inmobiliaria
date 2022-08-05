@@ -9,7 +9,7 @@ const searchEstate = async (req, res) => {
       "contact.email": { $in: req.userEmail },
     };
     if (search) {
-      query.title = { $regex: search, $options: "i" };
+      query.name = { $regex: search, $options: "i" };
     }
     if (category) {
       query.category = category;
