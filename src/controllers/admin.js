@@ -8,11 +8,15 @@ import { destroyUrls } from "../helper/imageUpload.js";
 const getAllEmployees = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
+
     const role = await Role.findOne({ name: "employee" });
-    const employees = await User.find({ role: role._id })
-      .skip((page - 1) * limit)
-      .limit(limit);
-    res.status(200).json({ data: employees });
+    const [employees, total] = await Promise.all([
+      User.find({ role: role._id })
+        .skip((page - 1) * limit)
+        .limit(limit),
+      User.countDocuments({ role: role._id }),
+    ]);
+    res.status(200).json({ total, data: employees });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -22,10 +26,13 @@ const getAllEmployees = async (req, res) => {
 const getAllEstates = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-    const estates = await Estate.find()
-      .skip((page - 1) * limit)
-      .limit(limit);
-    res.status(200).json({ data: estates });
+    const [estates, total] = await Promise.all([
+      Estate.find()
+        .skip((page - 1) * limit)
+        .limit(limit),
+      Estate.countDocuments(),
+    ]);
+    res.status(200).json({ total, data: estates });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -35,10 +42,13 @@ const getAllEstates = async (req, res) => {
 const getAllTokens = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-    const tokens = await Token.find()
-      .skip((page - 1) * limit)
-      .limit(limit);
-    res.status(200).json({ data: tokens });
+    const [tokens, total] = await Promise.all([
+      Token.find()
+        .skip((page - 1) * limit)
+        .limit(limit),
+      Token.countDocuments(),
+    ]);
+    res.status(200).json({ total, data: tokens });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
