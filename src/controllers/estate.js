@@ -4,7 +4,7 @@ import { generateUrl, destroyUrls } from "../helper/imageUpload.js";
 // Estate search by search term, category, orderBy, order, limit, skip, createdAt, rooms params
 const searchEstate = async (req, res) => {
   try {
-    const { search, orderBy = "1", rooms, category, limit, page } = req.query;
+    const { search, orderBy = "0", rooms, category, limit, page } = req.query;
     var query = {
       "contact.email": { $in: req.userEmail },
     };
@@ -17,47 +17,36 @@ const searchEstate = async (req, res) => {
     if (rooms) {
       query = { ...query, "details.rooms": { $in: rooms } };
     }
-    
+    var filter = {};
     switch (orderBy) {
       // sort from oldest to newest
       case "0":
-        const estates3 = await Estate.find(query)
-          .sort({ createdAt: 1 })
-          .skip((page - 1) * limit)
-          .limit(limit);
-        res.status(200).json(estates3);
+        filter = { createdAt: 1 };
         break;
       // sort from newest to oldest
       case "1":
-        const estates2 = await Estate.find(query)
-          .sort({ createdAt: -1 })
-          .skip((page - 1) * limit)
-          .limit(limit);
-        res.status(200).json(estates2);
+        filter = { createdAt: -1 };
         break;
       // sort from cheapest to most expensive
       case "2":
-        const estates = await Estate.find(query)
-          .sort({ price: 1 })
-          .skip((page - 1) * limit)
-          .limit(limit);
-        res.status(200).json(estates);
+        filter = { price: 1 };
         break;
       // sort from most expensive to cheapest
       case "3":
-        const estates1 = await Estate.find(query)
-          .sort({ price: -1 })
-          .skip((page - 1) * limit)
-          .limit(limit);
-        res.status(200).json(estates1);
+        filter = { price: -1 };
         break;
       default:
-        const estates4 = await Estate.find(query)
-          .skip((page - 1) * limit)
-          .limit(limit);
-        res.status(200).json(estates4);
+        filter = { createdAt: 1 };
         break;
     }
+    const [searchData, total] = await Promise.all([
+      Estate.find(query)
+        .sort(filter)
+        .skip((page - 1) * limit)
+        .limit(limit),
+      Estate.countDocuments(query),
+    ]);
+    res.status(200).json({ total, data: searchData });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -67,12 +56,17 @@ const searchEstate = async (req, res) => {
 const allEstates = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-    const userEstates = await Estate.find({
-      "contact.email": { $in: req.userEmail },
-    })
-      .skip((page - 1) * limit)
-      .limit(limit);
-    res.status(200).json({ data: userEstates });
+    const [userEstates, total] = await Promise.all([
+      Estate.find({
+        "contact.email": { $in: req.userEmail },
+      })
+        .skip((page - 1) * limit)
+        .limit(limit),
+      Estate.countDocuments({
+        "contact.email": { $in: req.userEmail },
+      }),
+    ]);
+    res.status(200).json({ total, data: userEstates });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
