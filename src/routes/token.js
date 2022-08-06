@@ -1,9 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { verifyToken } from "../middlewares/authJwt.js";
 import {
-  checkUserExists,
-  checkChangePassword,
   checkUserHasToken,
   checkTokenExists,
 } from "../middlewares/dbValidators.js";
@@ -13,20 +10,26 @@ import { generateToken, validateToken } from "../controllers/token.js";
 // Create a new router
 const router = Router();
 
-// Middleware config
-router.use(verifyToken);
-router.use(checkUserExists);
-router.use(checkChangePassword);
-
-// Create token
-router.post("/generate-token", [checkUserHasToken], generateToken);
+// Generate token by email
+router.post(
+  "/generate-token",
+  [
+    check("email", "Email is required").trim().isEmail(),
+    validateFields,
+    checkUserHasToken,
+  ],
+  generateToken
+);
 
 // Validate token
 router.post(
   "/validate-token",
   [
-    // Check if token is numeric and has a length of 6
-    check("token", "Token is required").isNumeric().isLength({ min: 6 }),
+    // Check if token is numeric and has minimum length of 6 and maximum length of 6
+    check("token", "Token is required").isNumeric().isLength({
+      min: 6,
+      max: 6,
+    }),
     validateFields,
     checkTokenExists,
   ],

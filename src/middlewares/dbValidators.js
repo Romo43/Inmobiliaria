@@ -4,8 +4,9 @@ import Token from "../models/token.js";
 
 // Check if user exists by params id
 const checkUserExistsByParamsId = async (req, res, next) => {
+  const { id } = req.body;
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
     next();
   } catch (err) {
@@ -25,8 +26,8 @@ const checkEstateExistsByParamsId = async (req, res, next) => {
   }
 };
 
-// Check if user exists
-const checkUserExists = async (req, res, next) => {
+// Check if user exists by token
+const checkUserExistsByToken = async (req, res, next) => {
   const id = req.userId;
   try {
     const user = await User.findById(id);
@@ -37,11 +38,23 @@ const checkUserExists = async (req, res, next) => {
   }
 };
 
+// Check if user exists by email
+const checkUserExistsByEmail = async (primary_email) => {
+  try {
+    const user = await User.findOne({ primary_email: primary_email });
+    if (!user) return false;
+    return user;
+  } catch (err) {
+    return false;
+  }
+}
+
 // Check if email already exists
 const checkEmailExists = async (req, res, next) => {
+  const { email } = req.body;
   try {
-    const email = await User.findOne({ email: req.body.email });
-    if (email)
+    const user = await User.findOne({ email: email });
+    if (user)
       return res.status(400).json({ message: "The email already exists" });
     next();
   } catch (err) {
@@ -51,11 +64,10 @@ const checkEmailExists = async (req, res, next) => {
 
 // Check if primary email already exists
 const checkPrimaryEmailExists = async (req, res, next) => {
+  const { primary_email } = req.body;
   try {
-    const primaryEmail = await User.findOne({
-      primary_email: req.body.primary_email,
-    });
-    if (primaryEmail)
+    const user = await User.findOne({ primary_email: primary_email });
+    if (user)
       return res
         .status(400)
         .json({ message: "The primary email already exists" });
@@ -66,14 +78,23 @@ const checkPrimaryEmailExists = async (req, res, next) => {
 };
 
 // Check if change password is true
-const checkChangePassword = async (req, res, next) => {
+const checkChangePasswordTrue = async (email) => {
   try {
-    const user = await User.findById(req.userId);
-    if (user.change_password)
-      return res.status(400).json({
-        message:
-          "User can not generate or validate token if change_password is true",
-      });
+    const user = await User.findOne({ email: email });
+    if (!user.change_password) return false;
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+// Check if change password is false
+const checkChangePasswordFalse = async (req, res, next) => {
+  const id = req.userId;
+  try {
+    const user = await User.findById(id);
+    if (!user.change_password)
+      return res.status(400).json({ message: "User can not change password" });
     next();
   } catch (err) {
     res.status(500).json({ message: err });
@@ -82,8 +103,15 @@ const checkChangePassword = async (req, res, next) => {
 
 // Check if user has a token with status true and is expired
 const checkUserHasToken = async (req, res, next) => {
+  const { email } = req.body;
   try {
-    const token = await Token.findOne({ user: req.userId, status: true });
+    const user = await checkUserExistsByEmail(email);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    // check change password true
+    const changePasswordTrue = await checkChangePasswordTrue(email);
+    if (!changePasswordTrue)
+      return res.status(400).json({ message: "User can not change password" });
+    const token = await Token.findOne({ user: user._id, status: true });
     if (token) {
       // Check if token is expired
       if (token.expiresIn < Date.now()) {
@@ -105,7 +133,6 @@ const checkTokenExists = async (req, res, next) => {
   const { token } = req.body;
   try {
     const userToken = await Token.findOne({
-      user: req.userId,
       token: token,
       status: true,
     });
@@ -122,10 +149,10 @@ const checkTokenExists = async (req, res, next) => {
 export {
   checkUserExistsByParamsId,
   checkEstateExistsByParamsId,
-  checkUserExists,
+  checkUserExistsByToken,
   checkEmailExists,
   checkPrimaryEmailExists,
-  checkChangePassword,
+  checkChangePasswordFalse,
   checkUserHasToken,
   checkTokenExists,
 };

@@ -3,12 +3,9 @@ import User from "../models/User.js";
 // Change password
 const changePassword = async (req, res) => {
   const id = req.userId;
+  const { password } = req.body;
   try {
     const employee = await User.findById(id);
-    if (!employee.change_password) {
-      return res.status(400).json({ message: "You can not change password" });
-    }
-    const { password } = req.body;
     employee.password = await User.encryptPassword(password);
     employee.change_password = false;
     await employee.save();
