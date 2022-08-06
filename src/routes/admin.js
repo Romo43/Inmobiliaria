@@ -15,9 +15,9 @@ import {
 import {
   checkUserExistsByParamsId,
   checkEstateExistsByParamsId,
-  checkUserExists,
   checkEmailExists,
   checkPrimaryEmailExists,
+  checkUserExistsByToken,
 } from "../middlewares/dbValidators.js";
 import { validateFields } from "../middlewares/validateFields.js";
 
@@ -26,7 +26,7 @@ const router = Router();
 
 // Middleware config
 router.use(verifyToken);
-router.use(checkUserExists);
+router.use(checkUserExistsByToken);
 router.use(onlyAdmin);
 
 // Get all employees

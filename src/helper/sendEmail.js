@@ -10,9 +10,8 @@ const sendEmail = async (token, user) => {
     GOOGLE.SECRET,
     GOOGLE.REDIRECT
   );
-  console.log('oAuth2Client', oAuth2Client);
-  
   oAuth2Client.setCredentials({ refresh_token: GOOGLE.REFRESH_TOKEN });
+
   try {
     const accessToken = await oAuth2Client.getAccessToken();
     const transporter = nodemailer.createTransport({
@@ -26,19 +25,21 @@ const sendEmail = async (token, user) => {
         accessToken: accessToken,
       },
     });
-    console.log('transporter', transporter);
-    
     const mailOptions = {
       from: "AxioWeb <axioweb2022@gmail.com>",
       to: `${user}`,
       subject: "Token",
       html: contentHTML,
     };
-    console.log('mailOptions', mailOptions);
-    
-    await transporter.sendMail(mailOptions);
+    // Send email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return false;
+      }
+      return true;
+    });
   } catch (err) {
-    console.log(err);
+    return false;
   }
 };
 
