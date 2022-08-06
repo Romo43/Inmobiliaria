@@ -80,7 +80,7 @@ const checkPrimaryEmailExists = async (req, res, next) => {
 // Check if change password is true
 const checkChangePasswordTrue = async (email) => {
   try {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ primary_email: email });
     if (!user.change_password) return false;
     return true;
   } catch (err) {
@@ -109,7 +109,7 @@ const checkUserHasToken = async (req, res, next) => {
     if (!user) return res.status(404).json({ message: "User not found" });
     // check change password true
     const changePasswordTrue = await checkChangePasswordTrue(email);
-    if (!changePasswordTrue)
+    if (changePasswordTrue)
       return res.status(400).json({ message: "User can not change password" });
     const token = await Token.findOne({ user: user._id, status: true });
     if (token) {
