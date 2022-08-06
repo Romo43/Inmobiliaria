@@ -4,7 +4,7 @@ import Token from "../models/token.js";
 
 // Check if user exists by params id
 const checkUserExistsByParamsId = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -16,7 +16,7 @@ const checkUserExistsByParamsId = async (req, res, next) => {
 
 // Check if estate exists by params id
 const checkEstateExistsByParamsId = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     const estate = await Estate.findById(id);
     if (estate) return res.status(404).json({ message: "Estate not found" });
