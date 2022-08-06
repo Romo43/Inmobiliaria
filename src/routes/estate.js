@@ -11,8 +11,8 @@ import {
 } from "../controllers/estate.js";
 import { validateFields } from "../middlewares/validateFields.js";
 import {
-  checkUserExists,
   checkEstateExistsByParamsId,
+  checkUserExistsByToken,
 } from "../middlewares/dbValidators.js";
 
 // Create a new router
@@ -20,7 +20,7 @@ const router = Router();
 
 // Middleware config
 router.use(verifyToken);
-router.use(checkUserExists);
+router.use(checkUserExistsByToken);
 
 // Estate search
 router.get("/search", searchEstate);
