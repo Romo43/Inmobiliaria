@@ -19,7 +19,7 @@ const checkEstateExistsByParamsId = async (req, res, next) => {
   const { id } = req.params;
   try {
     const estate = await Estate.findById(id);
-    if (estate) return res.status(404).json({ message: "Estate not found" });
+    if (!estate) return res.status(404).json({ message: "Estate not found" });
     next();
   } catch (err) {
     return res.status(500).json({ message: err.message });
