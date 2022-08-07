@@ -52,8 +52,8 @@ router.post(
     check("estate_status", "Estate status is required")
       .trim()
       .isIn(["sale", "rent"]),
-    check("areas", "Areas is required").trim(),
-    check("equipped", "Equipped is required").trim(),
+    check("area", "Area is required").trim(),
+    check("equip", "Equip is required").trim(),
     check("terrain", "Terrain is required").trim().isNumeric(),
     check("preserved", "Preserved is required").trim(),
     check("service_room", "Service room is required").trim().isBoolean(),
@@ -64,7 +64,7 @@ router.post(
     check("old_estate", "Old estate is required").trim().isString(),
     check("bathrooms", "Bathrooms is required").trim().isNumeric(),
     check("maintenance", "Maintenance is required").trim().isNumeric(),
-    check("coordinates", "Coordinates is required").trim(),
+    check("location", "Location is required").trim(),
     validateFields,
   ],
   createEstate
@@ -84,8 +84,8 @@ router.patch(
     check("estate_status", "Estate status is required")
       .trim()
       .isIn(["sale", "rent"]),
-    check("areas", "Areas is required").trim(),
-    check("equipped", "Equipped is required").trim(),
+    check("area", "Area is required").trim(),
+    check("equip", "Equip is required").trim(),
     check("terrain", "Terrain is required").trim().isNumeric(),
     check("preserved", "Preserved is required").trim(),
     check("service_room", "Service room is required").trim().isBoolean(),
@@ -96,7 +96,7 @@ router.patch(
     check("old_estate", "Old estate is required").trim().isString(),
     check("bathrooms", "Bathrooms is required").trim().isNumeric(),
     check("maintenance", "Maintenance is required").trim().isNumeric(),
-    check("coordinates", "Coordinates is required").trim(),
+    check("location", "Location is required").trim(),
     validateFields,
     checkEstateExistsByParamsId,
   ],

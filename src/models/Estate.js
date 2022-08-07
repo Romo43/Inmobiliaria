@@ -73,7 +73,7 @@ const estateSchema = Schema(
     location: {
       type: {
         type: String,
-        default: "point",
+        default: "Point",
       },
       coordinates: {
         type: [Number],

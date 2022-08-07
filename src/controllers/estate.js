@@ -98,8 +98,8 @@ const createEstate = async (req, res) => {
     price,
     category,
     estate_status,
-    areas,
-    equipped,
+    area,
+    equip,
     terrain,
     preserved,
     service_room,
@@ -110,7 +110,7 @@ const createEstate = async (req, res) => {
     old_estate,
     bathrooms,
     maintenance,
-    coordinates,
+    location,
   } = req.body;
   try {
     // Upload images
@@ -122,8 +122,8 @@ const createEstate = async (req, res) => {
       category,
       estate_status,
       imgs: urls,
-      areas,
-      equipped,
+      areas: area,
+      equipped: equip,
       details: {
         terrain,
         preserved,
@@ -137,7 +137,7 @@ const createEstate = async (req, res) => {
         maintenance,
       },
       location: {
-        coordinates,
+        coordinates: location,
       },
       contact: {
         uid: req.userId,
@@ -147,7 +147,6 @@ const createEstate = async (req, res) => {
       },
     });
     await Estate.create(newEstate);
-
     res.status(201).json({ message: "Estate created successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -163,8 +162,8 @@ const updateEstateById = async (req, res) => {
     price,
     category,
     estate_status,
-    areas,
-    equipped,
+    area,
+    equip,
     terrain,
     preserved,
     service_room,
@@ -175,8 +174,7 @@ const updateEstateById = async (req, res) => {
     old_estate,
     bathrooms,
     maintenance,
-    coordinates,
-    type,
+    location,
   } = req.body;
   try {
     const data = await Estate.findById(id);
@@ -196,8 +194,8 @@ const updateEstateById = async (req, res) => {
       category: category,
       estate_status: estate_status,
       imgs: urls,
-      areas: areas,
-      equipped: equipped,
+      areas: area,
+      equipped: equip,
       details: {
         terrain: terrain,
         preserved: preserved,
@@ -211,8 +209,7 @@ const updateEstateById = async (req, res) => {
         maintenance: maintenance,
       },
       location: {
-        type: type,
-        coordinates: coordinates,
+        coordinates: location,
       },
       contact: {
         uid: data.contact._id,

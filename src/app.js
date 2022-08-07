@@ -37,7 +37,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 //app.use(upload.single("image"));
-app.use(upload.array("image", 10));
+app.use(upload.array("file", 10));
 
 // Routes
 app.use("/api/admin", adminRoute);
