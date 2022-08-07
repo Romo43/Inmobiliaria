@@ -110,7 +110,7 @@ const checkUserHasToken = async (req, res, next) => {
     // check change password true
     const changePasswordTrue = await checkChangePasswordTrue(email);
     if (changePasswordTrue)
-      return res.status(400).json({ message: "User can not change password" });
+      return res.status(400).json({ message: "User can not generate token" });
     const token = await Token.findOne({ user: user._id, status: true });
     if (token) {
       // Check if token is expired

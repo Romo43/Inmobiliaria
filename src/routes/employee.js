@@ -1,28 +1,58 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { changePassword } from "../controllers/employee.js";
-import { verifyToken } from "../middlewares/authJwt.js";
+import {
+  changePassword,
+  generateToken,
+  validateToken,
+} from "../controllers/employee.js";
 import { validateFields } from "../middlewares/validateFields.js";
-import { checkChangePasswordFalse, checkUserExistsByToken } from "../middlewares/dbValidators.js";
+import {
+  checkUserHasToken,
+  checkTokenExists,
+} from "../middlewares/dbValidators.js";
 
 // Create a new router
 const router = Router();
-
-// Middleware config
-router.use(verifyToken);
-router.use(checkUserExistsByToken);
-router.use(checkChangePasswordFalse);
 
 // Change password
 router.put(
   "/change-password",
   [
-    // check password is required
-    check("password", "Password is required").not().isEmpty(),
-    // check("password", "New password is required").not().isEmpty().trim(),
+    check("token", "Token is required").isNumeric().isLength({
+      min: 6,
+      max: 6,
+    }),
+    check("password", "Password is required").not().isEmpty().trim(),
     validateFields,
+    checkTokenExists,
   ],
   changePassword
+);
+
+// Generate token by email
+router.post(
+  "/generate-token",
+  [
+    check("email", "Email is required").trim().isEmail(),
+    validateFields,
+    checkUserHasToken,
+  ],
+  generateToken
+);
+
+// Validate token
+router.post(
+  "/validate-token",
+  [
+    // Check if token is numeric and has minimum length of 6 and maximum length of 6
+    check("token", "Token is required").isNumeric().isLength({
+      min: 6,
+      max: 6,
+    }),
+    validateFields,
+    checkTokenExists,
+  ],
+  validateToken
 );
 
 // Export the router
