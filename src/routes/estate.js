@@ -1,19 +1,15 @@
 import { Router } from "express";
 import { check } from "express-validator";
+import {
+  allEstates, createEstate, findEstateById, searchEstate, updateEstateById,
+  updateEstateStatusById
+} from "../controllers/estate.js";
 import { verifyToken } from "../middlewares/authJwt.js";
 import {
-  searchEstate,
-  allEstates,
-  findEstateById,
-  createEstate,
-  updateEstateById,
-  updateEstateStatusById,
-} from "../controllers/estate.js";
-import { validateFields } from "../middlewares/validateFields.js";
-import {
   checkEstateExistsByParamsId,
-  checkUserExistsByToken,
+  checkUserExistsByToken
 } from "../middlewares/dbValidators.js";
+import { validateFields } from "../middlewares/validateFields.js";
 
 // Create a new router
 const router = Router();
@@ -52,8 +48,8 @@ router.post(
     check("estate_status", "Estate status is required")
       .trim()
       .isIn(["sale", "rent"]),
-    check("area", "Area is required").trim(),
-    check("equip", "Equip is required").trim(),
+    check("area", "Area is required").isArray(),
+    check("equip", "Equip is required").isArray(),
     check("terrain", "Terrain is required").trim().isNumeric(),
     check("preserved", "Preserved is required").trim(),
     check("service_room", "Service room is required").trim().isBoolean(),
@@ -64,7 +60,7 @@ router.post(
     check("old_estate", "Old estate is required").trim().isString(),
     check("bathrooms", "Bathrooms is required").trim().isNumeric(),
     check("maintenance", "Maintenance is required").trim().isNumeric(),
-    check("location", "Location is required").trim(),
+    check("location", "Location is required").isArray(),
     validateFields,
   ],
   createEstate
@@ -84,8 +80,8 @@ router.patch(
     check("estate_status", "Estate status is required")
       .trim()
       .isIn(["sale", "rent"]),
-    check("area", "Area is required").trim(),
-    check("equip", "Equip is required").trim(),
+    check("area", "Area is required").isArray(),
+    check("equip", "Equip is required").isArray(),
     check("terrain", "Terrain is required").trim().isNumeric(),
     check("preserved", "Preserved is required").trim(),
     check("service_room", "Service room is required").trim().isBoolean(),
@@ -96,7 +92,7 @@ router.patch(
     check("old_estate", "Old estate is required").trim().isString(),
     check("bathrooms", "Bathrooms is required").trim().isNumeric(),
     check("maintenance", "Maintenance is required").trim().isNumeric(),
-    check("location", "Location is required").trim(),
+    check("location", "Location is required").isArray(),
     validateFields,
     checkEstateExistsByParamsId,
   ],
